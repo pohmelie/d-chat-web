@@ -1,10 +1,7 @@
-@on_socket_get = (msg, count) ->
-    console.log("got something")
-    console.log(msg, count)
-    for num in [0..count - 1]
-        console.log(msg[num])
+@on_socket_get = (msg) ->
+    console.log("got something [", msg, "]")
 
 @run = ->
     console.log("run pressed")
-    console.log(socket_connect("rubattle.net", 6112))
-    socket_send([1])
+    socket_connect("rubattle.net", 6112)
+    socket_send("01")
