@@ -1,9 +1,9 @@
 class @bit32
     @make_signed: (n) ->
-        return n << 0
+        return (n & 0xffffffff) << 0
 
     @make_unsigned: (n) ->
-        return n >>> 0
+        return (n & 0xffffffff) >>> 0
 
     @shr: (n, s) ->
         if s >= 32
