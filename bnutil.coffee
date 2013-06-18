@@ -10,38 +10,7 @@ mpq_hash_codes = [
     0x2FEC8733
 ]
 
-
-class @bnutil
-
-    check_revision: (formula, mpq, path="d2xp") ->
-
-        mpq_hash = mpq_hash_codes[mpq[9] - "0".charCodeAt(0)]
-        formula = String.fromCharCode(formula...).split(" ")
-
-        for i in range(len(formula)):
-            if formula[i].isdigit():
-                init, actions = formula[:i], formula[i + 1:]
-                break
-
-        for i in range(len(actions)):
-            var, expr = actions[i].split("=")
-            actions[i] = var + "=(" + expr + ") % (1 << 32)"
-
-        actions = compile(str.join("\n", actions), "<string>", mode="exec")
-
-        get_raw = lambda fname: open(os.path.join(path, fname), mode="rb", buffering=0).readall()
-        data = bytes.join(b"", map(get_raw, ("Game.exe", "Bnclient.dll", "D2Client.dll")))
-        nums = struct.unpack(str.format("{}I", len(data) // 4), data)
-
-        env = {}
-        exec(str.join("\n", init), env)
-        env["A"] ^= mpq_hash
-        for env["S"] in nums:
-            exec(actions, env)
-
-        return env["C"]
-###
-    alpha_map = (
+alpha_map = [
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -74,57 +43,73 @@ class @bnutil
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
-    )
+    ]
 
 
-    def hash_d2key(cdkey, client_token, server_token):
+class @bnutil
+
+    @check_revision: (formula, mpq) ->
+
+        mpq_hash = mpq_hash_codes[Number(mpq[9])]
+        exprs = formula.split(" ")
+        init = exprs[0..2].join(";") + ";"
+
+        body = ""
+        for i in [4...(4 + Number(exprs[3]))]
+            [k, v] = exprs[i].split("=")
+            body += "#{k}=bit32.make_unsigned(#{v});"
+
+        A = B = C = S = i = 0
+        body = "for(i = 0; i != binaries.length; i++){S = binaries[i];" + body + "}"
+        eval(init)
+        A ^= mpq_hash
+        eval(body)
+
+        return C
+
+
+    @hash_d2key: (cdkey, client_token, server_token) ->
 
         checksum = 0
-        m_key = [None] * len(cdkey)
+        m_key = []
 
-        for i in range(0, len(cdkey), 2):
-            n = alpha_map[cdkey[i]] * 24 + alpha_map[cdkey[i + 1]]
-            if n >= 0x100:
+        for i in [0...cdkey.length] by 2
+            n = alpha_map[cdkey.charCodeAt(i)] * 24 + alpha_map[cdkey.charCodeAt(i + 1)]
+            if n >= 0x100
                 n -= 0x100
-                checksum |= 1 << (i >> 1)
-            m_key[i] = str.format("{:X}", (n >> 4) & 0xf)
-            m_key[i + 1] = str.format("{:X}", n & 0xf)
+                checksum = bit32.make_unsigned(checksum | bit32.shl(1, bit32.shr(i, 1)))
+            m_key[i] = bit32.make_unsigned(bit32.shr(n, 4) & 0xf).toString(16).toUpperCase()
+            m_key[i + 1] = bit32.make_unsigned(n & 0xf).toString(16).toUpperCase()
 
-        if reduce(lambda v, ch: v + (int(ch, 16) ^ (v * 2)), m_key, 3) & 0xff != checksum:
-            return None, None  # invalid CD-key
+        if m_key.reduce(((v, ch) -> (v + (parseInt(ch, 16) ^ (v * 2))) & 0xff), 3) != checksum
+            return  # invalid CD-key
 
-        for i in range(len(cdkey) - 1, -1, -1):
-            n = (i - 9) % 0x10
-            m_key[i], m_key[n] = m_key[n], m_key[i]
+        for i in [(cdkey.length - 1)..0] by -1
+            n = (i - 9) & 0xf
+            [m_key[i], m_key[n]] = [m_key[n], m_key[i]]
 
         v2 = 0x13AC9741
-        for i in range(len(cdkey) - 1, -1, -1):
-            if ord(m_key[i]) <= ord("7"):
-                m_key[i] = chr((v2 & 7) ^ ord(m_key[i]))
-                v2 >>= 3
-            elif ord(m_key[i]) < ord("A"):
-                m_key[i] = chr((i & 1) ^ ord(m_key[i]))
+        for i in [(cdkey.length - 1)..0] by -1
+            t = parseInt(m_key[i], 16)
+            if t <= 7
+                m_key[i] = String.fromCharCode((v2 & 7) ^ m_key[i].charCodeAt(0))
+                v2 = bit32.shr(v2, 3)
+            else if t < 10
+                m_key[i] = String.fromCharCode((i & 1) ^ m_key[i].charCodeAt(0))
 
-        m_key = str.join("", map(str, m_key))
-
-        public_value = int(m_key[2:8], 16)
-        hash_data = struct.pack(
-            "6I",
+        m_key = m_key.join("")
+        public_value = parseInt(m_key[2..7], 16)
+        hash_data = xsha1.pack(
             client_token,
             server_token,
-            int(m_key[:2], 16),
-            int(m_key[2:8], 16),
+            parseInt(m_key[0..1], 16),
+            public_value,
             0,
-            int(m_key[8:16], 16)
+            parseInt(m_key[8..15], 16)
         )
 
-        return public_value, bsha1(hash_data)
+        return [public_value, xsha1.bsha1(hash_data)]
 
 
-    def sub_double_hash(client_token, server_token, hashpass):
-        return bsha1(struct.pack("2I20s", client_token, server_token, hashpass))
-
-    if __name__ == "__main__":
-        #map("{:02x}".format, range(10))
-        print(str.join(" ", map("{:02x}".format, bsha1(bytes(range(10))))))
-    ###
+    @sub_double_hash: (client_token, server_token, hashpass) ->
+        return xsha1.bsha1(xsha1.pack(client_token, server_token).concat(hashpass))
