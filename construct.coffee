@@ -1,7 +1,3 @@
-###
-CoffeeScriptBinaryParser
-###
-
 class @bit32
 
     @make_signed: (n) ->

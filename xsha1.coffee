@@ -4,6 +4,7 @@ class @xsha1
 
         return @pack(@calc_hash_buffer(data)...)
 
+
     @pack: (args...) ->
 
         ret = []
