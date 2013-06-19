@@ -40,7 +40,7 @@ class @bit32
         return @make_unsigned(@shr(n, 32 - (s % 32)) | @shl(n, s % 32))
 
 
-class @csbp
+class @construct
 
     class @DataIO
 
@@ -69,12 +69,12 @@ class @csbp
 
         parse: (data) ->
 
-            return @__parse(new csbp.DataIO(data))
+            return @__parse(new construct.DataIO(data))
 
 
         build: (data) ->
 
-            return @__build(data, new csbp.DataIO())
+            return @__build(data, new construct.DataIO())
 
 
     class @BaseInt extends @Base
@@ -186,24 +186,24 @@ log = (foo) ->
     catch e
         console.log(e)
 
-log(() => new @csbp.BaseInt("yoba", 0, "signed", "little"))
-log(() => new @csbp.BaseInt("yoba", "abc", "signed", "little"))
-log(() => new @csbp.BaseInt("yoba", 2, "ssigned", "little"))
-log(() => new @csbp.BaseInt("yoba", 2, "signed", "litttle"))
+log(() => new @construct.BaseInt("yoba", 0, "signed", "little"))
+log(() => new @construct.BaseInt("yoba", "abc", "signed", "little"))
+log(() => new @construct.BaseInt("yoba", 2, "ssigned", "little"))
+log(() => new @construct.BaseInt("yoba", 2, "signed", "litttle"))
 
-x = new @csbp.BaseInt("SLInt16", 2, "signed", "little")
-y = new @csbp.BaseInt("SBInt16", 2, "signed", "big")
+x = new @construct.BaseInt("SLInt16", 2, "signed", "little")
+y = new @construct.BaseInt("SBInt16", 2, "signed", "big")
 
 vars = [
-    new @csbp.BaseInt("SLInt16", 2, "signed", "little"),
-    new @csbp.BaseInt("SBInt16", 2, "signed", "big"),
-    new @csbp.BaseInt("ULInt16", 2, "unsigned", "little"),
-    new @csbp.BaseInt("UBInt16", 2, "unsigned", "big"),
+    new @construct.BaseInt("SLInt16", 2, "signed", "little"),
+    new @construct.BaseInt("SBInt16", 2, "signed", "big"),
+    new @construct.BaseInt("ULInt16", 2, "unsigned", "little"),
+    new @construct.BaseInt("UBInt16", 2, "unsigned", "big"),
 
-    new @csbp.BaseInt("SLInt32", 4, "signed", "little"),
-    new @csbp.BaseInt("SBInt32", 4, "signed", "big"),
-    new @csbp.BaseInt("ULInt32", 4, "unsigned", "little"),
-    new @csbp.BaseInt("UBInt32", 4, "unsigned", "big"),
+    new @construct.BaseInt("SLInt32", 4, "signed", "little"),
+    new @construct.BaseInt("SBInt32", 4, "signed", "big"),
+    new @construct.BaseInt("ULInt32", 4, "unsigned", "little"),
+    new @construct.BaseInt("UBInt32", 4, "unsigned", "big"),
 ]
 
 for test in [[0xff, 0, 0xff, 0], [0, 0xff, 0, 0xff]]
@@ -213,7 +213,7 @@ for test in [[0xff, 0, 0xff, 0], [0, 0xff, 0, 0xff]]
         builded = v.build(parsed)
         console.log(v.name, parsed, builded)
 
-s = new @csbp.CString("CString")
+s = new @construct.CString("CString")
 
 ss = [
     [48, 49, 50, 0],
@@ -227,13 +227,13 @@ for test in ss
     log(() => console.log(s.name, s.parse(test), s.build(s.parse(test))))
 
 
-s = new @csbp.Struct(
+s = new @construct.Struct(
     "test 1",
-    new @csbp.BaseInt("a", 2, "unsigned", "little"),
-    new @csbp.BaseInt("b", 2, "unsigned", "little"),
-    new @csbp.Struct(
+    new @construct.BaseInt("a", 2, "unsigned", "little"),
+    new @construct.BaseInt("b", 2, "unsigned", "little"),
+    new @construct.Struct(
         "test 2",
-        new @csbp.CString("string")
+        new @construct.CString("string")
     )
 )
 data = [0xff, 0, 0, 0xff, 48, 49, 50, 0]
