@@ -112,4 +112,5 @@ class @bnutil
 
 
     @sub_double_hash: (client_token, server_token, hashpass) ->
+
         return xsha1.bsha1(xsha1.pack(client_token, server_token).concat(hashpass))
