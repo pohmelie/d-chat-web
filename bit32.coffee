@@ -1,4 +1,4 @@
-class @bit32
+class bit32
 
     @make_signed: (n) ->
 

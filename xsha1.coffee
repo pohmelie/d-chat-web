@@ -1,4 +1,6 @@
-class @xsha1
+#= require <bit32.coffee>
+
+class xsha1
 
     @bsha1: (data) ->
 

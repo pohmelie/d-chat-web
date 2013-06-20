@@ -1,42 +1,23 @@
-class @bit32
+#= require <bit32.coffee>
 
-    @make_signed: (n) ->
+class construct
 
-        return (n & 0xffffffff) << 0
+    @copy: (obj, visited=[]) ->
 
+        if typeof(obj) isnt "object"
+            return obj
 
-    @make_unsigned: (n) ->
+        for [r, c] in visited
+            if r is obj
+                return c
 
-        return (n & 0xffffffff) >>> 0
+        c = {}
+        visited.push([obj, c])
+        for k, v of obj
+            c[k] = @copy(v, visited)
 
+        return c
 
-    @shr: (n, s) ->
-
-        if s >= 32
-            return 0
-        else
-            return @make_unsigned(n >>> s)
-
-
-    @shl: (n, s) ->
-
-        if s >= 32
-            return 0
-        else
-            return @make_unsigned(n << s)
-
-
-    @ror: (n, s) ->
-
-        return @make_unsigned(@shr(n, s % 32) | @shl(n, 32 - (s % 32)))
-
-
-    @rol: (n, s) ->
-
-        return @make_unsigned(@shr(n, 32 - (s % 32)) | @shl(n, s % 32))
-
-
-class @construct
 
     class @DataIO
 
@@ -65,7 +46,9 @@ class @construct
 
         parse: (data) ->
 
-            return @__parse(new construct.DataIO(data))
+            ctx = {}
+            ctx["_"] = ctx
+            return @__parse(new construct.DataIO(data), ctx)
 
 
         build: (data) ->
@@ -73,7 +56,7 @@ class @construct
             return @__build(data, new construct.DataIO())
 
 
-    class @BaseInt extends @Base
+    class @_BaseInt extends @Base
 
         constructor: (@name, @size, @signed, @endian) ->
 
@@ -112,7 +95,7 @@ class @construct
                     throw new Error("BaseInt (name = '#{@name}'), bad data")
 
             if @signed is "signed"
-                num = BaseInt.signification(num, @size)
+                num = _BaseInt.signification(num, @size)
 
             return num
 
@@ -131,7 +114,7 @@ class @construct
             return io.write(data)
 
 
-    class @CString extends @Base
+    class @_CString extends @Base
 
         constructor: (@name) ->
 
@@ -154,14 +137,16 @@ class @construct
             return io.write([0])
 
 
-    class @Struct extends @Base
+    class @_Struct extends @Base
 
         constructor: (@name, @objects...) ->
 
-        __parse: (io, ctx={}) ->
+        __parse: (io, ctx) ->
 
             for object in @objects
-                ctx[object.name] = object.__parse(io, {"_":ctx})
+                parsed = object.__parse(io, {"_":ctx})
+                if object.name?
+                    ctx[object.name] = parsed
 
             return ctx
 
@@ -169,80 +154,284 @@ class @construct
         __build: (ctx, io) ->
 
             for object in @objects
-                object.__build(ctx[object.name], io)
+                object.__build(ctx[object.name] or ctx, io)
 
             return io.data
 
 
-bit32 = @bit32
+    class @_Enum extends @Base
 
-log = (foo) ->
-    try
-        foo()
-    catch e
-        console.log(e)
+        constructor: (@object, @values) ->
 
-log(() => new @construct.BaseInt("yoba", 0, "signed", "little"))
-log(() => new @construct.BaseInt("yoba", "abc", "signed", "little"))
-log(() => new @construct.BaseInt("yoba", 2, "ssigned", "little"))
-log(() => new @construct.BaseInt("yoba", 2, "signed", "litttle"))
-
-x = new @construct.BaseInt("SLInt16", 2, "signed", "little")
-y = new @construct.BaseInt("SBInt16", 2, "signed", "big")
-
-vars = [
-    new @construct.BaseInt("SLInt16", 2, "signed", "little"),
-    new @construct.BaseInt("SBInt16", 2, "signed", "big"),
-    new @construct.BaseInt("ULInt16", 2, "unsigned", "little"),
-    new @construct.BaseInt("UBInt16", 2, "unsigned", "big"),
-
-    new @construct.BaseInt("SLInt32", 4, "signed", "little"),
-    new @construct.BaseInt("SBInt32", 4, "signed", "big"),
-    new @construct.BaseInt("ULInt32", 4, "unsigned", "little"),
-    new @construct.BaseInt("UBInt32", 4, "unsigned", "big"),
-]
-
-for test in [[0xff, 0, 0xff, 0], [0, 0xff, 0, 0xff]]
-    console.log("\ntest sequence ->", test)
-    for v in vars
-        parsed = v.parse(test)
-        builded = v.build(parsed)
-        console.log(v.name, parsed, builded)
-
-s = new @construct.CString("CString")
-
-ss = [
-    [48, 49, 50, 0],
-    [48, 49, 50],
-    [0],
-]
-
-for test in ss
-    console.log("\ntest sequence ->", test)
-    #console.log(s.name, s.parse(test), s.build(s.parse(test)))
-    log(() => console.log(s.name, s.parse(test), s.build(s.parse(test))))
+            @name = @object.name
 
 
-s = new @construct.Struct(
+        __parse: (io) ->
+
+            parsed = @object.__parse(io)
+
+            if @values[parsed]?
+                return @values[parsed]
+            else
+                throw new Error("Enum: value not in list (#{parsed})")
+
+
+        __build: (value, io) ->
+
+            for k, v of @values
+                if value == v
+                    return @object.__build(k, io)
+
+            throw new Error("Enum: value not in list (#{ctx[@name]})")
+
+
+    class @_Const extends @Base
+
+        constructor: (@object, @value) ->
+            @name = @object.name
+
+
+        __parse: (io) ->
+
+            parsed = @object.__parse(io)
+
+            if parsed == @value
+                return @value
+            else
+                throw new Error("Const: expect (#{@value}), but got (#{parsed})")
+
+        __build: (nothing, io) ->
+
+            return @object.__build(@value, io)
+
+
+    class @_Embedded extends @Base
+
+        constructor: (@object) ->
+
+        __parse: (io, ctx) ->
+
+            return @object.__parse(io, ctx["_"])
+
+
+        __build: (ctx, io) ->
+
+            return @object.__build(ctx, io)
+
+
+    class @_Switch extends @Base
+
+        constructor: (@f, @objects) ->
+
+        __parse: (io, ctx) ->
+
+            ctx = ctx["_"]
+            object = @objects[@f(ctx)] or @objects.default
+
+            if object?
+                ctx[object.name] = object.__parse(io, ctx)
+                return ctx
+            else
+                throw new Error("Switch: there is no (#{@f(ctx)}) key or 'default'")
+
+
+        __build: (ctx, io) ->
+
+            object = @objects[@f(ctx)] or @objects.default
+
+            if object?
+                return object.__build(ctx[object.name] or ctx, io)
+            else
+                throw new Error("Switch: there is no (#{@f(ctx)}) key or 'default'")
+
+
+    class @_Pass extends @Base
+
+        __parse: (io, ctx) ->
+
+            return ctx
+
+
+        __build: (ctx, io) ->
+
+            return io.data
+
+
+    class @_OptionalGreedyRange extends @Base
+
+        constructor: (@object) ->
+            @name = @object.name
+
+
+        __parse: (io, ctx) ->
+
+            ctxs = []
+            io_position = io.shift
+
+            try
+                while true
+                    io_position = io.shift
+                    ctxs.push(@object.__parse(io, construct.copy(ctx)))
+            catch error
+                io.shift = io_position
+
+            return ctxs
+
+
+        __build: (ctxs, io) ->
+
+            for ctx in ctxs
+                @object.__build(ctx, io)
+
+            return io.data
+
+
+    class @_Array extends @Base
+
+        constructor: (cnt, @object) ->
+
+            @name = @object.name
+
+            if typeof(cnt) is "number"
+                @count = () -> cnt
+            else
+                @count = cnt
+
+
+        __parse: (io, ctx) ->
+
+            ctxs = []
+            for i in [1..@count(ctx)]
+                ctxs.push(@object.__parse(io, construct.copy(ctx)))
+
+            return ctxs
+
+
+        __build: (ctxs, io) ->
+
+            if ctxs.length != @count(ctxs[0])
+                throw new Error("Array: count of objects (#{ctxs.length}) doesn't matches #{@count()}")
+
+            for ctx in ctxs
+                @object.__build(ctx, io)
+
+            return io.data
+
+
+    class @_Adapter extends @Base
+
+        constructor: (@object,  @parser, @builder) ->
+
+
+        __parse: (io, ctx) ->
+
+            return @parser(@object.__parse(io, ctx), ctx)
+
+
+        __build: (ctx, io) ->
+
+            return @object.build(@builder(ctx), io)
+
+
+    @str2bin: (str) ->
+
+        return (str.charCodeAt(i) for i in [0...str.length])
+
+
+    # shorthands for similar creation of "base" classes and "complex" ones
+
+    @BaseInt: (args...) -> new @_BaseInt(args...)
+    @CString: (args...) -> new @_CString(args...)
+    @Struct: (args...) -> new @_Struct(args...)
+    @Enum: (args...) -> new @_Enum(args...)
+    @Const: (args...) -> new @_Const(args...)
+    @Embedded: (args...) -> new @_Embedded(args...)
+    @Switch: (args...) -> new @_Switch(args...)
+    @Pass: (args...) -> new @_Pass(args...)
+    @OptionalGreedyRange: (args...) -> new @_OptionalGreedyRange(args...)
+    @Array: (args...) -> new @_Array(args...)
+    @Adapter: (args...) -> new @_Adapter(args...)
+
+    @EmbedStruct: (objecsts...) -> @Embedded(@Struct(null, objecsts...))
+    @Tail: (name="tail") -> @OptionalGreedyRange(@ULInt8(name))
+    @Bytes: (name, count) -> @Array(count, @ULInt8(name))
+
+    @ULInt8: (name) -> @BaseInt(name, 1, "unsigned", "little")
+    @ULInt16: (name) -> @BaseInt(name, 2, "unsigned", "little")
+    @ULInt32: (name) -> @BaseInt(name, 4, "unsigned", "little")
+
+    @UBInt8: (name) -> @BaseInt(name, 1, "unsigned", "big")
+    @UBInt16: (name) -> @BaseInt(name, 2, "unsigned", "big")
+    @UBInt32: (name) -> @BaseInt(name, 4, "unsigned", "big")
+
+    @SLInt8: (name) -> @BaseInt(name, 1, "signed", "little")
+    @SLInt16: (name) -> @BaseInt(name, 2, "signed", "little")
+    @SLInt32: (name) -> @BaseInt(name, 4, "signed", "little")
+
+    @SBInt8: (name) -> @BaseInt(name, 1, "signed", "big")
+    @SBInt16: (name) -> @BaseInt(name, 2, "signed", "big")
+    @SBInt32: (name) -> @BaseInt(name, 4, "signed", "big")
+
+
+s = construct.Struct(
     "test 1",
-    new @construct.BaseInt("a", 2, "unsigned", "little"),
-    new @construct.BaseInt("b", 2, "unsigned", "little"),
-    new @construct.Struct(
-        "test 2",
-        new @construct.CString("string")
+    construct.ULInt16("a")
+    construct.ULInt16("b")
+    construct.EmbedStruct(construct.CString("string")),
+    construct.Enum(
+        construct.ULInt8("some_enum")
+        {
+            0:"zero",
+            1:"one",
+            2:"two"
+        }
+    )
+    construct.Const(construct.ULInt8("with_name1"), 33),
+    construct.Const(construct.ULInt8(null), 33),
+    construct.Const(construct.ULInt8("with_name2"), 34),
+    construct.Const(construct.ULInt8(null), 34),
+    construct.Switch(
+        (ctx) -> ctx.some_enum,
+        {
+            one:construct.ULInt8("switch1"),
+            two:construct.ULInt16("switch2"),
+            default:construct.Pass(),
+        }
     )
 )
-data = [0xff, 0, 0, 0xff, 48, 49, 50, 0]
+data = [0xff, 0, 0, 0xff, 48, 49, 50, 0, 2, 33, 33, 34, 34, 0xfe, 0xff, 0x01]
 psd = s.parse(data)
 bld = s.build(psd)
 
 console.log("\n", psd, "\n", bld)
-console.log(
-    s.build({
-        a:1,
-        b:2,
-        "test 2":{
-            string:"hello"
-        }
-    })
+
+construct.copy([1, 2, 3])
+gr = construct.Struct(
+    null,
+    construct.ULInt8("count")
+    construct.Array(
+        (ctx) -> ctx["_"].count,
+        construct.Struct(
+            "blah"
+            construct.ULInt8("low"),
+            construct.ULInt8("high"),
+        )
+    ),
+    construct.Tail()
 )
+console.log("\n")
+psd = gr.parse([2, 1, 2, 3, 4, 5, 6])
+console.log(psd)
+bld = gr.build(psd)
+console.log(bld)
+
+ad = construct.Adapter(
+    construct.ULInt8("x"),
+    (ctx) -> ctx + 1,
+    (ctx) -> ctx - 1
+)
+
+p = ad.parse([1])
+console.log(p)
+b = ad.build(p)
+console.log(b)

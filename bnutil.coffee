@@ -1,3 +1,4 @@
+#= require <bit32.coffee>
 
 mpq_hash_codes = [
     0xE7F4CB62,
@@ -46,7 +47,7 @@ alpha_map = [
     ]
 
 
-class @bnutil
+class bnutil
 
     @check_revision: (formula, mpq) ->
 
