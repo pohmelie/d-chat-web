@@ -1,6 +1,7 @@
 #= require <construct.coffee>
 
 class packets
+
     @_spacket: construct.Struct(
         null,
         construct.Const(construct.ULInt8(null), 0xff),

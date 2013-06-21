@@ -27,6 +27,22 @@ class construct
         return c
 
 
+    @linkify: (obj, owner=obj) ->
+
+        if typeof(obj) is "object"
+
+            if obj instanceof Array
+                for v in obj
+                    @linkify(v, owner)
+            else
+                obj["_"] = owner
+                for k, v of obj
+                    if v isnt owner
+                        @linkify(v, obj)
+
+        return obj
+
+
     class @DataIO
 
         constructor: (@data=[], @shift=0) ->
@@ -307,6 +323,7 @@ class construct
         __parse: (io, ctx) ->
 
             ctxs = []
+
             for i in [1..@count(ctx)]
                 ctxs.push(@object.__parse(io, construct.copy(ctx)))
                 if ctx["_"]?
