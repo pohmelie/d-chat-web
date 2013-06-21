@@ -86,6 +86,90 @@ class packets
         (ctx) -> ctx,
         (ctx) ->
             ctx.length = 0
-            ctx.length = packets._spacket.build(ctx).length
+            ctx.length = packets._spacket.build(construct.copy(ctx)).length
             return ctx
+    )
+
+    @rpacket: construct.Struct(
+        "rpackets",
+        construct.Const(construct.ULInt8(null), 0xff),
+        construct.Enum(
+            construct.ULInt8("packet_id"),
+            0x25:"SID_PING",
+            0x50:"SID_AUTH_INFO",
+            0x51:"SID_AUTH_CHECK",
+            0x3a:"SID_LOGONRESPONSE2",
+            0x0a:"SID_ENTERCHAT",
+            0x0b:"SID_GETCHANNELLIST",
+            0x0f:"SID_CHATEVENT",
+        ),
+        construct.ULInt16("length"),
+        construct.Switch(
+            (ctx) -> ctx.packet_id,
+            {
+                "SID_PING": construct.EmbedStruct(
+                    construct.ULInt32("value"),
+                ),
+                "SID_AUTH_INFO": construct.EmbedStruct(
+                    construct.ULInt32("logon_type"),
+                    construct.ULInt32("server_token"),
+                    construct.ULInt32("udp_value"),
+                    construct.Bytes("file_time", 8),
+                    construct.CString("file_name"),
+                    construct.CString("seed_values")
+                ),
+                "SID_AUTH_CHECK": construct.EmbedStruct(
+                    construct.ULInt32("result"),
+                    construct.CString("info"),
+                ),
+                "SID_LOGONRESPONSE2": construct.EmbedStruct(
+                    construct.ULInt32("result"),
+                    construct.Optional(construct.CString("info")),
+                ),
+                "SID_ENTERCHAT": construct.EmbedStruct(
+                    construct.CString("unique_name"),
+                    construct.CString("statstring"),
+                    construct.CString("account_name"),
+                ),
+                "SID_GETCHANNELLIST": construct.EmbedStruct(
+                    construct.OptionalGreedyRange(construct.CString("channels")),
+                ),
+                "SID_CHATEVENT": construct.EmbedStruct(
+                    construct.Enum(
+                        construct.ULInt32("event_id"),
+                        0x01:"ID_USER",
+                        0x02:"ID_JOIN",
+                        0x03:"ID_LEAVE",
+                        0x04:"ID_WHISPER",
+                        0x05:"ID_TALK",
+                        0x06:"ID_BROADCAST",
+                        0x07:"ID_CHANNEL",
+                        0x09:"ID_USERFLAGS",
+                        0x0a:"ID_WHISPERSENT",
+                        0x0d:"ID_CHANNELFULL",
+                        0x0e:"ID_CHANNELDOESNOTEXIST",
+                        0x0f:"ID_CHANNELRESTRICTED",
+                        0x12:"ID_INFO",
+                        0x13:"ID_ERROR",
+                        0x17:"ID_EMOTE",
+                        0x18:"ID_SYSTEMBLUE",
+                        0x19:"ID_SYSTEMRED",
+                    ),
+                    construct.ULInt32("user_flags"),
+                    construct.ULInt32("ping"),
+                    construct.Bytes("ip_address", 4),
+                    construct.ULInt32("account_number"),
+                    construct.ULInt32("registration_authority"),
+                    construct.CString("username"),
+                    construct.CString("text"),
+                ),
+            }
+        )
+
+    )
+
+    @rpackets: construct.Struct(
+        null,
+        construct.OptionalGreedyRange(packets.rpacket),
+        construct.Tail()
     )

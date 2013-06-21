@@ -1,4 +1,6 @@
 #= require <bit32.coffee>
+#= require <convert.coffee>
+
 
 class construct
 
@@ -11,10 +13,16 @@ class construct
             if r is obj
                 return c
 
-        c = {}
-        visited.push([obj, c])
-        for k, v of obj
-            c[k] = @copy(v, visited)
+        if obj instanceof Array
+            c = []
+            visited.push([obj, c])
+            for v in obj
+                c.push(@copy(v, visited))
+        else
+            c = {}
+            visited.push([obj, c])
+            for k, v of obj
+                c[k] = @copy(v, visited)
 
         return c
 
@@ -125,7 +133,7 @@ class construct
                 while (ch = io.read()) != 0
                     data.push(ch)
 
-                return String.fromCharCode(data...)
+                return convert.bin2str(data)
 
             catch error
                 throw new Error("CString, unexpected end of data")
@@ -133,7 +141,7 @@ class construct
 
         __build: (string, io) ->
 
-            io.write((string.charCodeAt(i) for i in [0...string.length]))
+            io.write(convert.str2bin(string))
             return io.write([0])
 
 
@@ -154,7 +162,10 @@ class construct
         __build: (ctx, io) ->
 
             for object in @objects
-                object.__build(ctx[object.name] or ctx, io)
+                if object.name? and ctx[object.name]?
+                    object.__build(ctx[object.name], io)
+                else
+                    object.__build(ctx, io)
 
             return io.data
 
@@ -205,20 +216,6 @@ class construct
             return @object.__build(@value, io)
 
 
-    class @_Embedded extends @Base
-
-        constructor: (@object) ->
-
-        __parse: (io, ctx) ->
-
-            return @object.__parse(io, ctx["_"])
-
-
-        __build: (ctx, io) ->
-
-            return @object.__build(ctx, io)
-
-
     class @_Switch extends @Base
 
         constructor: (@f, @objects) ->
@@ -229,8 +226,10 @@ class construct
             object = @objects[@f(ctx)] or @objects.default
 
             if object?
-                ctx[object.name] = object.__parse(io, ctx)
-                return ctx
+                if object.name? and ctx[object.name]?
+                    return object.__parse(io, ctx[object.name])
+                else
+                    return object.__parse(io, ctx)
             else
                 throw new Error("Switch: there is no (#{@f(ctx)}) key or 'default'")
 
@@ -240,7 +239,10 @@ class construct
             object = @objects[@f(ctx)] or @objects.default
 
             if object?
-                return object.__build(ctx[object.name] or ctx, io)
+                if object.name? and ctx[object.name]?
+                    return object.__build(ctx[object.name], io)
+                else
+                    return object.__build(ctx, io)
             else
                 throw new Error("Switch: there is no (#{@f(ctx)}) key or 'default'")
 
@@ -260,6 +262,7 @@ class construct
     class @_OptionalGreedyRange extends @Base
 
         constructor: (@object) ->
+
             @name = @object.name
 
 
@@ -272,6 +275,9 @@ class construct
                 while true
                     io_position = io.shift
                     ctxs.push(@object.__parse(io, construct.copy(ctx)))
+                    if ctx["_"]?
+                        ctxs[ctxs.length - 1]["_"] = ctx["_"]
+
             catch error
                 io.shift = io_position
 
@@ -303,6 +309,8 @@ class construct
             ctxs = []
             for i in [1..@count(ctx)]
                 ctxs.push(@object.__parse(io, construct.copy(ctx)))
+                if ctx["_"]?
+                    ctxs[ctxs.length - 1]["_"] = ctx["_"]
 
             return ctxs
 
@@ -322,7 +330,6 @@ class construct
 
         constructor: (@object,  @parser, @builder) ->
 
-
         __parse: (io, ctx) ->
 
             return @parser(@object.__parse(io, ctx), ctx)
@@ -333,10 +340,37 @@ class construct
             return @object.build(@builder(ctx), io)
 
 
-    @str2bin: (str) ->
+    class @_Optional extends @Base
 
-        return (str.charCodeAt(i) for i in [0...str.length])
+        constructor: (@object) ->
 
+            @name = @object.name
+
+
+        __parse: (io, ctx) ->
+
+            io_position = io.shift
+
+            try
+                ret = @object.__parse(io, construct.copy(ctx))
+                if ctx["_"]?
+                    ret["_"] = ctx["_"]
+                return ret
+
+            catch error
+                io.shift = io_position
+                return ctx
+
+
+        __build: (ctx, io) ->
+
+            ios = construct.copy(io)
+
+            try
+                return @object.__build(io, ctx)
+
+            catch error
+                io.data = ios.data
 
     # shorthands for similar creation of "base" classes and "complex" ones
 
@@ -345,14 +379,14 @@ class construct
     @Struct: (args...) -> new @_Struct(args...)
     @Enum: (args...) -> new @_Enum(args...)
     @Const: (args...) -> new @_Const(args...)
-    @Embedded: (args...) -> new @_Embedded(args...)
     @Switch: (args...) -> new @_Switch(args...)
     @Pass: (args...) -> new @_Pass(args...)
     @OptionalGreedyRange: (args...) -> new @_OptionalGreedyRange(args...)
     @Array: (args...) -> new @_Array(args...)
     @Adapter: (args...) -> new @_Adapter(args...)
+    @Optional: (args...) -> new @_Optional(args...)
 
-    @EmbedStruct: (objecsts...) -> @Embedded(@Struct(null, objecsts...))
+    @EmbedStruct: (objecsts...) -> @Struct(null, objecsts...)
     @Tail: (name="tail") -> @OptionalGreedyRange(@ULInt8(name))
     @Bytes: (name, count) -> @Array(count, @ULInt8(name))
 
@@ -371,67 +405,3 @@ class construct
     @SBInt8: (name) -> @BaseInt(name, 1, "signed", "big")
     @SBInt16: (name) -> @BaseInt(name, 2, "signed", "big")
     @SBInt32: (name) -> @BaseInt(name, 4, "signed", "big")
-
-
-s = construct.Struct(
-    "test 1",
-    construct.ULInt16("a")
-    construct.ULInt16("b")
-    construct.EmbedStruct(construct.CString("string")),
-    construct.Enum(
-        construct.ULInt8("some_enum")
-        {
-            0:"zero",
-            1:"one",
-            2:"two"
-        }
-    )
-    construct.Const(construct.ULInt8("with_name1"), 33),
-    construct.Const(construct.ULInt8(null), 33),
-    construct.Const(construct.ULInt8("with_name2"), 34),
-    construct.Const(construct.ULInt8(null), 34),
-    construct.Switch(
-        (ctx) -> ctx.some_enum,
-        {
-            one:construct.ULInt8("switch1"),
-            two:construct.ULInt16("switch2"),
-            default:construct.Pass(),
-        }
-    )
-)
-data = [0xff, 0, 0, 0xff, 48, 49, 50, 0, 2, 33, 33, 34, 34, 0xfe, 0xff, 0x01]
-psd = s.parse(data)
-bld = s.build(psd)
-
-console.log("\n", psd, "\n", bld)
-
-construct.copy([1, 2, 3])
-gr = construct.Struct(
-    null,
-    construct.ULInt8("count")
-    construct.Array(
-        (ctx) -> ctx["_"].count,
-        construct.Struct(
-            "blah"
-            construct.ULInt8("low"),
-            construct.ULInt8("high"),
-        )
-    ),
-    construct.Tail()
-)
-console.log("\n")
-psd = gr.parse([2, 1, 2, 3, 4, 5, 6])
-console.log(psd)
-bld = gr.build(psd)
-console.log(bld)
-
-ad = construct.Adapter(
-    construct.ULInt8("x"),
-    (ctx) -> ctx + 1,
-    (ctx) -> ctx - 1
-)
-
-p = ad.parse([1])
-console.log(p)
-b = ad.build(p)
-console.log(b)
