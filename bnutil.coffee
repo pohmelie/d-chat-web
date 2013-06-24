@@ -2,17 +2,6 @@
 
 class bnutil
 
-    @mpq_hash_codes: [
-        0xE7F4CB62,
-        0xF6A14FFC,
-        0xAA5504AF,
-        0x871FCDC2,
-        0x11BF6A18,
-        0xC57292E6,
-        0x7927D27E,
-        0x2FEC8733
-    ]
-
     @alpha_map: [
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -47,25 +36,6 @@ class bnutil
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     ]
-
-    @check_revision: (formula, mpq) ->
-
-        mpq_hash = bnutil.mpq_hash_codes[Number(mpq[9])]
-        exprs = formula.split(" ")
-        init = exprs[0..2].join(";") + ";"
-
-        body = ""
-        for i in [4...(4 + Number(exprs[3]))]
-            [k, v] = exprs[i].split("=")
-            body += "#{k}=bit32.make_unsigned(#{v});"
-
-        A = B = C = S = i = 0
-        body = "for(i = 0; i != binaries.length; i++){S = binaries[i];" + body + "}"
-        eval(init)
-        A ^= mpq_hash
-        eval(body)
-
-        return C
 
 
     @hash_d2key: (cdkey, client_token, server_token) ->

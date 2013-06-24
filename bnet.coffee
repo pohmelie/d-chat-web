@@ -83,6 +83,43 @@ class bnet
                             @server_token
                         )
 
+                        w = new Worker("check-revision-background.js")
+                        w.onmessage = (event) =>
+                            info = JSON.parse(event.data)
+                            if info.done
+                                @send(
+                                    packets.spacket.build(
+                                        construct.linkify({
+                                            packet_id:"SID_AUTH_CHECK",
+                                            client_token:@client_token,
+                                            exe_version:0x01000d00,
+                                            exe_hash:info.result,
+                                            number_of_cd_keys:2,
+                                            spawn_cd_key:0,
+                                            cd_keys:[
+                                                {
+                                                    key_length:16,
+                                                    cd_key_product:6,
+                                                    cd_key_public:clpub,
+                                                    hash:clhash,
+                                                },
+                                                {
+                                                    key_length:16,
+                                                    cd_key_product:12,
+                                                    cd_key_public:lodpub,
+                                                    hash:lodhash,
+                                                },
+                                            ],
+                                            exe_info:"Game.exe 10/18/11 20:48:14 65536",
+                                            cd_key_owner:"yoba",
+                                        })
+                                    )
+                                )
+                                w.terminate()
+
+                        w.postMessage(JSON.stringify([pack.seed_values, pack.file_name]))
+
+                        ###
                         @send(
                             packets.spacket.build(
                                 construct.linkify({
@@ -114,6 +151,7 @@ class bnet
                                 })
                             )
                         )
+                        ###
 
                     when "SID_AUTH_CHECK"
 
