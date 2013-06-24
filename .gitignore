@@ -4,3 +4,5 @@
 /d-chat-web.coffee
 /*.exe
 /*.cmd
+/make
+/*.js
