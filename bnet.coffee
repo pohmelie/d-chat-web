@@ -2,6 +2,7 @@
 #= require <convert.coffee>
 #= require <xsha1.coffee>
 #= require <bnutil.coffee>
+#= require <packets.coffee>
 
 
 class bnet

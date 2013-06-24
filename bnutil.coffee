@@ -1,17 +1,19 @@
 #= require <bit32.coffee>
 
-mpq_hash_codes = [
-    0xE7F4CB62,
-    0xF6A14FFC,
-    0xAA5504AF,
-    0x871FCDC2,
-    0x11BF6A18,
-    0xC57292E6,
-    0x7927D27E,
-    0x2FEC8733
-]
+class bnutil
 
-alpha_map = [
+    @mpq_hash_codes: [
+        0xE7F4CB62,
+        0xF6A14FFC,
+        0xAA5504AF,
+        0x871FCDC2,
+        0x11BF6A18,
+        0xC57292E6,
+        0x7927D27E,
+        0x2FEC8733
+    ]
+
+    @alpha_map: [
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -46,12 +48,9 @@ alpha_map = [
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     ]
 
-
-class bnutil
-
     @check_revision: (formula, mpq) ->
 
-        mpq_hash = mpq_hash_codes[Number(mpq[9])]
+        mpq_hash = bnutil.mpq_hash_codes[Number(mpq[9])]
         exprs = formula.split(" ")
         init = exprs[0..2].join(";") + ";"
 
@@ -75,7 +74,7 @@ class bnutil
         m_key = []
 
         for i in [0...cdkey.length] by 2
-            n = alpha_map[cdkey.charCodeAt(i)] * 24 + alpha_map[cdkey.charCodeAt(i + 1)]
+            n = bnutil.alpha_map[cdkey.charCodeAt(i)] * 24 + bnutil.alpha_map[cdkey.charCodeAt(i + 1)]
             if n >= 0x100
                 n -= 0x100
                 checksum = bit32.make_unsigned(checksum | bit32.shl(1, bit32.shr(i, 1)))
