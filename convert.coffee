@@ -7,7 +7,7 @@ class convert
 
     @str2bin: (str) ->
 
-        return (str.charCodeAt(i) for i in [0...str.length])
+        return (str.charCodeAt(i) for i in [0..])
 
 
     @bin2hex: (bin) ->

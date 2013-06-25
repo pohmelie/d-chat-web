@@ -57,7 +57,7 @@ class construct
 
         tail: () ->
 
-            return @data[@shift...@data.length]
+            return @data[@shift..]
 
 
         write: (bytes) ->
