@@ -2,22 +2,17 @@
 <html>
   <head>
     <title>d-chat-web</title>
-    <!--script src="scripts/jquery-2.0.2.min.js" type="text/javascript"></script>
-    <script src="scripts/coffee-script.js" type="text/javascript"></script-->
+    <script src="scripts/jquery-2.0.2.min.js" type="text/javascript"></script>
+    <script src="scripts/coffee-script.js" type="text/javascript"></script>
     <script src="scripts/java_socket_bridge.js" type="text/javascript"></script>
-    <!--script src="scripts/binaries.js" type="text/javascript"></script-->
 
-    <!--script src="bit32.coffee" type="text/coffeescript"></script>
-    <script src="xsha1.coffee" type="text/coffeescript"></script>
-    <script src="bnutil.coffee" type="text/coffeescript"></script>
-    <script src="construct.coffee" type="text/coffeescript"></script>
-    <script src="packets.coffee" type="text/coffeescript"></script>
-    <script src="test.coffee" type="text/coffeescript"></script-->
     <!--script src="check-revision-background.js" type="text/javascript"></script-->
-    <script src="d-chat-web.js" type="text/javascript"></script>
+    <!--script src="d-chat-web.js" type="text/javascript"></script-->
+    <script src="test.coffee" type="text/coffeescript"></script>
   </head>
   <body>
-    <applet id="JavaSocketBridge" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
-    <button id="butt" onclick="run()">Run!</button>
+    <applet id="JavaSocketBridge" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0" hidden></applet>
+    <div><button id="butt" onclick="run()">Run!</button></div>
+    <div><input></div>
   </body>
 </html>
