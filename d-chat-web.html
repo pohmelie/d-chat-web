@@ -8,11 +8,18 @@
 
     <!--script src="check-revision-background.js" type="text/javascript"></script-->
     <!--script src="d-chat-web.js" type="text/javascript"></script-->
+    <script src="stylist.coffee" type="text/coffeescript"></script>
     <script src="test.coffee" type="text/coffeescript"></script>
+    <style>
+        .wow {color: blue}
+    </style>
   </head>
   <body>
     <applet id="JavaSocketBridge" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0" hidden></applet>
-    <div><button id="butt" onclick="run()">Run!</button></div>
-    <div><input></div>
+    <div><button onclick="run()">Run!</button></div>
+    <div><button onclick="run2()">add</button></div>
+    <div><button onclick="run3()">remove style</button></div>
+    <div class="wow">foobar</div>
+    <div><input class="wow"></div>
   </body>
 </html>
