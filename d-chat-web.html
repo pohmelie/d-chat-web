@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset='utf-8'>
+
     <title>d-chat-web</title>
+
+    <!--link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.10.3.custom.css"/-->
+
     <script src="scripts/jquery-2.0.2.min.js" type="text/javascript"></script>
+    <!--script src="scripts/jquery-ui-1.10.3.custom.js" type="text/javascript"></script-->
+
     <script src="scripts/coffee-script.js" type="text/javascript"></script>
     <script src="scripts/java_socket_bridge.js" type="text/javascript"></script>
 
@@ -10,16 +17,10 @@
     <!--script src="d-chat-web.js" type="text/javascript"></script-->
     <script src="stylist.coffee" type="text/coffeescript"></script>
     <script src="test.coffee" type="text/coffeescript"></script>
-    <style>
-        .wow {color: blue}
-    </style>
+
   </head>
+
   <body>
     <applet id="JavaSocketBridge" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0" hidden></applet>
-    <div><button onclick="run()">Run!</button></div>
-    <div><button onclick="run2()">add</button></div>
-    <div><button onclick="run3()">remove style</button></div>
-    <div class="wow">foobar</div>
-    <div><input class="wow"></div>
   </body>
 </html>
