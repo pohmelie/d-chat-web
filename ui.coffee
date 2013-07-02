@@ -41,6 +41,12 @@ class Tabs
         @autosize()
 
 
+    echo: (html) ->
+
+        @active.add(html)
+        $(@chat_id).append(html)
+
+
     add: (title="", prefix="", closeable=true) ->
 
         while $("#tab" + @tabs_float_index.toString()).length != 0
@@ -74,9 +80,13 @@ class Tabs
 
         $(@active.id).removeClass("color-active-tab-back color-active-tab-fore")
         $(tab.id).addClass("color-active-tab-back color-active-tab-fore")
+
         @active.input = $(@input_id).val()
         @active = tab
         $(@input_id).val(@active.input)
+
+        $(@chat_id).html(@active.html.join(""))
+
         $(@input_id).focus()
 
 
