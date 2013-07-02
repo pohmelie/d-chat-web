@@ -5,7 +5,7 @@
 
     <title>d-chat-web</title>
 
-    <!--link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.10.3.custom.css"/-->
+    <link rel="stylesheet" type="text/css" href="d-chat-web.css"/>
 
     <script src="scripts/jquery-2.0.2.min.js" type="text/javascript"></script>
     <!--script src="scripts/jquery-ui-1.10.3.custom.js" type="text/javascript"></script-->
@@ -14,13 +14,20 @@
     <script src="scripts/java_socket_bridge.js" type="text/javascript"></script>
 
     <!--script src="check-revision-background.js" type="text/javascript"></script-->
-    <!--script src="d-chat-web.js" type="text/javascript"></script-->
+    <script src="d-chat-web.js" type="text/javascript"></script>
+    <!--script src="ui.coffee" type="text/coffeescript"></script>
     <script src="stylist.coffee" type="text/coffeescript"></script>
-    <script src="test.coffee" type="text/coffeescript"></script>
+    <script src="d-chat-web.coffee" type="text/coffeescript"></script-->
 
   </head>
 
-  <body>
+  <body class="color-background">
     <applet id="JavaSocketBridge" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0" hidden></applet>
+
+    <div id="container">
+        <div id="tabs"></div>
+        <div id="chat" class="border color-border color-text"></div>
+        <input id="input" class="border color-border color-text color-background"></input>
+    </div>
   </body>
 </html>

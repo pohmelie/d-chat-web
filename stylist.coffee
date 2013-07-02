@@ -14,21 +14,19 @@ class @Stylist
 
         s = "<style id='#{@name}'>\n"
         for k, v of @css
-            s += "    #{k} {\n"
+            s += "#{k} {\n"
             for ik, iv of v
-                s += "        #{ik}"
+                s += "    #{ik}"
                 if iv?
                     s += ": #{iv}"
                 s += ";\n"
-            s += "    }"
+            s += "}\n"
         s += "</style>"
         return s
 
 
     update: () ->
 
-        console.log(@build())
-        console.log($("#" + @name).length)
         $("#" + @name).replaceWith(@build())
 
 

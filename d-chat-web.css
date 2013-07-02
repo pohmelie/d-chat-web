@@ -1,0 +1,53 @@
+.color-background {
+    background-color:#293134;
+}
+
+.color-text {
+    color:#e0e2e4;
+}
+
+.color-border {
+    border-color:#93c763;
+}
+
+.color-active-tab-fore {
+    color:#293134
+}
+
+.tab:hover {
+    background-color:#404e51;
+}
+
+.color-active-tab-back, .color-active-tab-back:hover {
+    background-color:#93c763;
+}
+
+.border {
+    border-width:2px;
+    border-style:solid;
+    border-radius:5px;
+    padding:5px;
+    margin:5px;
+}
+
+.tab {
+    margin:0;
+}
+
+#container {
+    height:calc(100% - 10px);
+    padding:5px;
+}
+
+#tabs {
+    padding:5px;
+}
+
+#input {
+    width:calc(100% - 24px);
+}
+
+html, body {
+    height:100%;
+    margin:0;
+}
