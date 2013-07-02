@@ -37,8 +37,8 @@ class Tabs
         }
 
         @stylist.update()
-
         @set_active(@main)
+        @autosize()
 
 
     add: (title="", prefix="", closeable=true) ->
@@ -101,7 +101,7 @@ class Tabs
             $(@chat_id).outerHeight(true) +
             $(@input_id).outerHeight(true) -
             $(@chat_id).innerHeight() +
-            20 # double padding
+            10 # padding
         )
 
         @stylist.css[@chat_id] = {
