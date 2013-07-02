@@ -94,7 +94,7 @@ class Tabs
             @autosize()
 
 
-    autosize: () ->
+    autosize: () =>
 
         height = (
             $(@tabs_id).outerHeight(true) +
