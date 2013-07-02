@@ -33,7 +33,7 @@ class Tabs
 
         line_height = $(@main.id).outerHeight(true)
         @stylist.css[@tabs_id] = {
-            "line-height":"#{line_height}px"
+            "line-height":"#{line_height + 2}px"
         }
 
         @stylist.update()
@@ -101,7 +101,7 @@ class Tabs
             $(@chat_id).outerHeight(true) +
             $(@input_id).outerHeight(true) -
             $(@chat_id).innerHeight() +
-            10 # padding
+            20 # double padding
         )
 
         @stylist.css[@chat_id] = {
