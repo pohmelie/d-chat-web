@@ -41,6 +41,7 @@
 
 .color-active-tab-back, .color-active-tab-back:hover {
     background-color:#93c763;
+    font-weight:600;
 }
 
 .border {
