@@ -1,25 +1,11 @@
-/*
 @font-face {
-  font-family: 'PT Sans Caption';
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('PT Sans Caption'), local('PTSans-Caption'), url(fonts/OXYTDOzBcXU8MTNBvBHeScENMRmONIR770qe4kUs6CY.woff) format('woff');
+  src: local('Open Sans'), local('OpenSans'), url(fonts/uYKcPVoh6c5R0NpdEY5A-Q.woff) format('woff');
 }
 
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Open Sans Light'), local('OpenSans-Light'), url(fonts/DXI1ORHCpsQm3Vp6mXoaTRsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
-}
 
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 600;
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(fonts/MTP_ySUJH_bn48VBG8sNShsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
-}
-*/
 .color-background {
     background-color:#293134;
 }
