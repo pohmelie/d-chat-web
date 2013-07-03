@@ -47,13 +47,6 @@ class ui
 
             @active.add(html)
             $(@chat_id).append(html)
-            console.log(
-                $(@chat_id).scrollTop(),
-                $(@chat_id)[0].scrollHeight,
-                $(@chat_id).height(),
-                $(@chat_id).innerHeight(),
-                $(@chat_id).outerHeight()
-            )
             $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
 
 
