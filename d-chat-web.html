@@ -17,13 +17,15 @@
   </head>
 
   <body class="color-background">
-    <applet id="JavaSocketBridge" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0" hidden></applet>
+    <applet id="JavaSocketBridge" class="applet" archive="scripts/JavaSocketBridge.jar" code="JavaSocketBridge.class" width="0" height="0"></applet>
 
     <div id="container">
         <div id="tabs"></div>
         <div id="chat" class="border color-border color-text"></div>
-        <input id="input" class="border color-border color-text color-background"></input>
+        <input id="input" class="border color-border color-input color-background"></input>
+        <button id="button">disconnect</button>
     </div>
+
   </body>
 
 </html>
