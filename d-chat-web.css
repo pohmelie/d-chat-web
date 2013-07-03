@@ -1,3 +1,4 @@
+/*
 @font-face {
   font-family: 'PT Sans Caption';
   font-style: normal;
@@ -18,7 +19,7 @@
   font-weight: 600;
   src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(fonts/MTP_ySUJH_bn48VBG8sNShsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
 }
-
+*/
 .color-background {
     background-color:#293134;
 }
@@ -41,7 +42,6 @@
 
 .color-active-tab-back, .color-active-tab-back:hover {
     background-color:#93c763;
-    font-weight:600;
 }
 
 .border {
