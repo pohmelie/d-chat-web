@@ -54,7 +54,7 @@ class bnet
             )
 
         on_packet: (msg) =>
-
+            console.log((msg.length + 1) / 3)
             unparsed = packets.rpackets.parse(@head.concat(convert.hex2bin(msg)))
             @head = unparsed.tail
 
