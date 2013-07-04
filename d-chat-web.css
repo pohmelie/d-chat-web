@@ -19,18 +19,23 @@
 }
 
 .color-whisper-time {
+	color:#40ff40;
 }
 
 .color-whisper {
+	color:#40ff40;
 }
 
 .color-system {
+	color:#40ffff;
 }
 
 .color-nickname {
+	color:#bfbf00;
 }
 
 .color-whisper-nickname {
+	color:#40ff40;
 }
 
 .color-input {
@@ -38,9 +43,11 @@
 }
 
 .color-error {
+	color:#ff4040;
 }
 
 .color-delimiter {
+	color:#66747b;
 }
 
 .color-autocomplete {
