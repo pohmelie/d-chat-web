@@ -55,14 +55,6 @@ class bnet
             )
 
         on_packet: (msg) =>
-            if @lock
-                console.log("lock!")
-
-            while @lock
-                null
-
-            @lock = true
-            console.log((msg.length + 1) / 3)
 
             unparsed = packets.rpackets.parse(@head.concat(convert.hex2bin(msg)))
             @head = unparsed.tail
@@ -224,4 +216,4 @@ class bnet
 
                         console.log(pack)
 
-            @lock = false
+            return
