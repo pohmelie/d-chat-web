@@ -158,10 +158,15 @@ class Dchat
     command: (cmd) ->
 
         ###
-            autoscroll on/off
+            connect
+            disconnect
+            echo
+            reload
+            autoscroll
             color-*
             commands-prefix blah
             tab-mode on/off
+            help
         ###
 
         cmd = cmd.split(" ")
