@@ -12,6 +12,7 @@ class bnet
         constructor: (@host, @port, @connect, _send, @login_error=(() ->), @chat_event=(() ->)) ->
 
             @send = (data) -> _send(convert.bin2hex(data))
+            @lock = false
 
 
         login: (@username, password) ->
@@ -54,7 +55,15 @@ class bnet
             )
 
         on_packet: (msg) =>
+            if @lock
+                console.log("lock!")
+
+            while @lock
+                null
+
+            @lock = true
             console.log((msg.length + 1) / 3)
+
             unparsed = packets.rpackets.parse(@head.concat(convert.hex2bin(msg)))
             @head = unparsed.tail
 
@@ -214,3 +223,5 @@ class bnet
                     else
 
                         console.log(pack)
+
+            @lock = false
