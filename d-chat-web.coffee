@@ -53,6 +53,7 @@ class Dchat
 
         @say(["color-error", "Java applet error: " + msg])
         @disconnect()
+        return
 
 
     connect: (acc, pass) =>
