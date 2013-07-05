@@ -61,8 +61,8 @@ class Dchat
 
         if java_socket_bridge_ready_flag
 
-            @bn.login(acc, pass)
             @command("echo Connecting...")
+            @bn.login(acc, pass)
             @connected = true
 
         else
