@@ -5,7 +5,7 @@ class ui
 
     class @Tab
 
-        constructor: (@title, @prefix, @id, @closeable=true) ->
+        constructor: (@title, @prefix, @account, @id, @closeable=true) ->
 
             @html = []
             @input = ""
@@ -29,7 +29,7 @@ class ui
             @stylist = new Stylist()
 
             @tabs = []
-            @add("d-chat-web", "", false)
+            @add("", "", false)
 
             @main = @active = @tabs[0]
 
@@ -43,20 +43,22 @@ class ui
             @autosize()
 
 
-        echo: (html) ->
+        echo: (html, scroll_down=true) ->
 
             @active.add(html)
             $(@chat_id).append(html)
-            $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
+
+            if(scroll_down)
+                $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
 
 
-        add: (title="", prefix="", closeable=true) ->
+        add: (title="", prefix="", account="", closeable=true) ->
 
             while $("#tab" + @tabs_float_index.toString()).length != 0
                 @tabs_float_index += 1
 
             id = "tab" + @tabs_float_index.toString()
-            tab = new ui.Tab(title, prefix, "#" + id, closeable)
+            tab = new ui.Tab(title, prefix, account, "#" + id, closeable)
             @tabs.push(tab)
 
             $(@tabs_id).append("<span id=#{id}></span> ")
