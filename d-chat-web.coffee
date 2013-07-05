@@ -274,6 +274,7 @@ class Dchat
             commands history
             color-*
             tab-mode on/off
+            autocomplete
             help
         ###
 
