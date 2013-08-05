@@ -1,10 +1,3 @@
-// Listener.java
-// by Stephen Ware
-// April 25, 2009
-//
-// Part of the JavaSocketBridge project.
-// This class listens for input from a given socket.
-
 import java.io.*;
 import java.net.*;
 
@@ -14,14 +7,15 @@ public class Listener extends Thread{
 	// Instance variables
 	JavaSocketBridge parent;	// Report to this object
 	Socket socket;				// Listen to this socket
-	BufferedReader in;			// Input
+	InputStream in; 			// Input
 	boolean running = false;	// Am I still running?
+    byte[] input_buffer = new byte[65536];
 
 	// Constructor
 	public Listener(Socket s, JavaSocketBridge b) throws IOException{
 		parent = b;
 		socket = s;
-		in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		in = s.getInputStream();
 	}
 
 	// Close
@@ -35,17 +29,11 @@ public class Listener extends Thread{
 	// Main loop
 	public void run(){
 		running = true;
-		String str = null;
+		int count;
 		while(running){
 			try{
-				str = in.readLine();
-				if(str==null){
-					parent.disconnect();
-					close();
-				}
-				else{
-					parent.hear(str);
-				}
+				count = in.read(input_buffer);
+                parent.hear(parent.pack(input_buffer, count));
 			}
 			catch(Exception ex){
 				if(running){

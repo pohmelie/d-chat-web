@@ -32,6 +32,9 @@ window.java_socket_bridge_on_receive = (msg) ->
 window.java_socket_bridge_info = (msg) -> console.log(msg)
 
 
+window.java_socket_bridge_error = (msg) -> console.log(msg)
+
+
 window.java_socket_bridge_disconnect = () ->
 
     if java_socket_bridge_ready_flag
