@@ -56,12 +56,11 @@ class bnet
 
         on_packet: (msg) =>
 
-            console.log("[bnet] receive")
             unparsed = packets.rpackets.parse(@head.concat(convert.hex2bin(msg)))
             @head = unparsed.tail
 
             for pack in unparsed.rpackets
-                console.log(pack.packet_id)
+
                 switch pack.packet_id
 
                     when "SID_PING"
@@ -85,10 +84,8 @@ class bnet
                             @server_token
                         )
 
-                        console.log("starting worker")
                         w = new Worker("check-revision-background.js")
                         w.onmessage = (event) =>
-                            console.log("got info from worker")
                             info = JSON.parse(event.data)
                             if info.done
                                 @send(
