@@ -15,7 +15,7 @@ class bnet
             @lock = false
 
 
-        login: (@username, password) ->
+        login: (@username, password) =>
 
             @hashpass = xsha1.bsha1(convert.str2bin(password))
             @head = []

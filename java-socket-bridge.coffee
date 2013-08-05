@@ -20,8 +20,9 @@ window.java_socket_bridge_connect = (address, port) ->
     if java_socket_bridge_ready_flag
 
         java_socket_bridge_info("[js] connecting...")
-        $("#JavaSocketBridge").get(0).connect(address, port)
+        ret = $("#JavaSocketBridge").get(0).connect(address, port)
         java_socket_bridge_info("[js] connected")
+        return ret
 
 
 window.java_socket_bridge_on_receive = (msg) ->
