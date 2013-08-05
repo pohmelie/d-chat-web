@@ -1,5 +1,6 @@
 #= require <ui.coffee>
 #= require <bnet.coffee>
+#= require <java-socket-bridge.coffee>
 
 
 class Dchat
@@ -14,7 +15,14 @@ class Dchat
         @account = null
 
         @tabs = new ui.Tabs(@tabs_id, @chat_id, @input_id)
-        @bn = new bnet.Bnet("rubattle.net", 6112, socket_connect, socket_send, @login_error, @chat_event)
+        @bn = new bnet.Bnet(
+            "rubattle.net",
+            6112,
+            java_socket_bridge_connect,
+            java_socket_bridge_send,
+            @login_error,
+            @chat_event
+        )
         $(@input_id).on("keydown", @input_key)
         $(window).on("keydown", @global_key)
 
@@ -74,7 +82,7 @@ class Dchat
     disconnect: () ->
 
         if @connected
-            socket_disconnect()
+            java_socket_bridge_disconnect()
             @connected = false
             @command("echo Disconnected.")
             @users_count = 0
@@ -341,7 +349,7 @@ class Dchat
 
 $(() ->
     dchat = new Dchat("#tabs", "#chat", "#input")
-    window.on_socket_get = dchat.bn.on_packet
-    window.on_socket_error = dchat.socket_error
-    $(window).unload(socket_disconnect)
+    window.java_socket_bridge_on_receive = dchat.bn.on_packet
+    window.java_socket_bridge_error = dchat.socket_error
+    $(window).unload(java_socket_bridge_disconnect)
 )

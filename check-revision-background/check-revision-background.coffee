@@ -10,7 +10,7 @@
     )
 
     load_files(
-        ["d2xp/Game.exe", "d2xp/Bnclient.dll", "d2xp/D2Client.dll"],
+        ["d2xp/Game.dll", "d2xp/Bnclient.dll", "d2xp/D2Client.dll"],
         ((d) => check_revision(seed_values, file_name, d))
     )
 

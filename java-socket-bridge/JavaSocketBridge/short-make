@@ -1,0 +1,5 @@
+#!/bin/sh
+
+find -name "*.java" -exec javac -cp /usr/java/jdk1.7.0_25/jre/lib/plugin.jar {} +
+jar cf JavaSocketBridge.jar *.class
+/usr/java/jdk1.7.0_25/bin/jarsigner JavaSocketBridge.jar yoba

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: 1.6.0_11 (Sun Microsystems Inc.)
+
+Name: JavaSocketBridge.class
+SHA1-Digest: Sk2b7lP7kY1i4xFPTX58DcfgsDs=
+
+Name: Listener.class
+SHA1-Digest: 1fIPd4xMyigZh7pQ8LaIY+53C4M=
+
