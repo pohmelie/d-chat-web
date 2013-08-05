@@ -13,7 +13,6 @@ window.java_socket_bridge_send = (msg) ->
 
         java_socket_bridge_info("[js] sending -> " + msg)
         $("#JavaSocketBridge").get(0).send(msg)
-        java_socket_bridge_info("[js] sended")
 
 
 window.java_socket_bridge_connect = (address, port) ->
@@ -30,10 +29,10 @@ window.java_socket_bridge_on_receive = (msg) ->
     java_socket_bridge_info("[js] received -> " + msg)
 
 
-window.java_socket_bridge_error = (msg) -> console.log(msg)
-
-
 window.java_socket_bridge_info = (msg) -> console.log(msg)
+
+
+window.java_socket_bridge_error = (msg) -> console.log(msg)
 
 
 window.java_socket_bridge_disconnect = () ->

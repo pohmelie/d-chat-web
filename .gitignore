@@ -1,6 +1,4 @@
-/scripts/
 /d2xp/
-/test.coffee
 /*.exe
 /*.cmd
 /make
@@ -8,4 +6,4 @@
 /*.bat
 /fonts/
 /init
-/mongoose.conf
+/java-socket-bridge
