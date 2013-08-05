@@ -277,6 +277,13 @@ class Dchat
                 e.preventDefault()
 
 
+    autocomplete: () ->
+
+        msg = @tabs.active.prefix + $(@input_id).val().trim()
+        # $(@input_id).val("")
+
+
+
     command: (cmd) ->
 
         ###
