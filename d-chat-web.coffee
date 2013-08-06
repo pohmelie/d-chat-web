@@ -1,6 +1,8 @@
 #= require <ui.coffee>
 #= require <bnet.coffee>
 #= require <java-socket-bridge.coffee>
+#= require <history.coffee>
+#= require <autocomplete.coffee>
 
 
 class Dchat
@@ -14,6 +16,18 @@ class Dchat
         @autoscroll = true
         @account = null
 
+        @commands_list = [
+            "echo",
+            "connect",
+            "disconnect",
+            "reload",
+            "autoscroll",
+            "help",
+            "tab-mode"
+        ]
+        @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
+
+        @history = new History()
         @tabs = new ui.Tabs(@tabs_id, @chat_id, @input_id)
         @bn = new bnet.Bnet(
             "rubattle.net",
@@ -26,7 +40,7 @@ class Dchat
         $(@input_id).on("keydown", @input_key)
         $(window).on("keydown", @global_key)
 
-        @refresh_main_tab_title()
+        @refresh_title()
         @load_init_file()
 
 
@@ -87,15 +101,21 @@ class Dchat
             @command("echo Disconnected.")
             @users_count = 0
             @channel = null
-            @refresh_main_tab_title()
+            @refresh_title()
 
 
-    refresh_main_tab_title: () ->
+    refresh_title: () ->
 
         if @connected
-            @tabs.main.set_title("#{@channel} (#{@users_count})")
+
+            msg = "#{@channel} (#{@users_count})"
+
         else
-            @tabs.main.set_title("d-chat-web")
+
+            msg = "d-chat-web"
+
+        @tabs.main.set_title(msg)
+        $(document).attr("title", msg)
 
 
     time: () ->
@@ -127,13 +147,14 @@ class Dchat
                     @users_count += 1
 
                 @nicknames[pack.username] = nickname
-                @refresh_main_tab_title()
+                @autocomplete.add("*" + pack.username)
+                @refresh_title()
 
             when "ID_LEAVE"
 
                 @nicknames[pack.username] = null
                 @users_count -= 1
-                @refresh_main_tab_title()
+                @refresh_title()
 
             when "ID_INFO"
 
@@ -150,7 +171,7 @@ class Dchat
                     ["color-delimiter", "*"],
                     ["color-nickname", pack.username],
                     ["color-delimiter", ": "],
-                    ["color-text", pack.text]
+                    ["color-text", @strip(pack.text)]
                 )
 
             when "ID_CHANNEL"
@@ -158,18 +179,16 @@ class Dchat
                 @channel = pack.text
                 @users_count = 0
                 @nicknames = {}
-                @refresh_main_tab_title()
+                @refresh_title()
 
             when "ID_WHISPER"
 
                 @say(
-                    ["color-whisper-nickname", @nicknames[pack.username] or ""],
-                    ["color-delimiter", "*"],
-                    ["color-whisper-nickname", pack.username],
+                    ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*" + pack.username],
                     ["color-delimiter", " -> "],
                     ["color-whisper-nickname", "*" + @account],
                     ["color-delimiter", ": "],
-                    ["color-whisper", pack.text]
+                    ["color-whisper", @strip(pack.text)]
                 )
 
             when "ID_WHISPERSENT"
@@ -177,11 +196,9 @@ class Dchat
                 @say(
                     ["color-whisper-nickname", "*" + @account],
                     ["color-delimiter", " -> "],
-                    ["color-whisper-nickname", @nicknames[pack.username] or ""],
-                    ["color-delimiter", "*"],
-                    ["color-whisper-nickname", pack.username],
+                    ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*" + pack.username],
                     ["color-delimiter", ": "],
-                    ["color-whisper", pack.text]
+                    ["color-whisper", @strip(pack.text)]
                 )
 
             when "ID_BROADCAST"
@@ -189,7 +206,7 @@ class Dchat
                 @say(
                     ["color-whisper-nickname", pack.username],
                     ["color-delimiter", ": "],
-                    ["color-whisper", pack.text]
+                    ["color-whisper", @strip(pack.text)]
                 )
 
 
@@ -230,6 +247,12 @@ class Dchat
                     @disconnect()
                     e.preventDefault()
 
+        else if e.which == 112
+
+            @show_help()
+            e.preventDefault()
+
+
         console.log(e.currentTarget, e.which, e.ctrlKey, e.altKey, e.shiftKey)
 
 
@@ -239,8 +262,14 @@ class Dchat
         @command("echo Autoscroll set to #{@autoscroll}.")
 
 
+    strip: (msg) ->
+
+        return $("<div>" + msg + "</div>").text()
+
+
     common_message: (msg) =>
 
+        msg = @strip(msg)
         if msg isnt ""
 
             if msg[0] is @commands_prefix
@@ -267,31 +296,49 @@ class Dchat
 
             when 13  # enter
 
+                @history.add($(@input_id).val())
+                @history.reset()
+
                 msg = @tabs.active.prefix + $(@input_id).val().trim()
                 $(@input_id).val("")
                 @common_message(msg)
 
             when 9  # tab
 
-                # autocomplete
+                msg = $(@input_id).val()
+                words = @autocomplete.filter(msg)
+                if words.length == 1
+
+                    $(@input_id).val(msg + @autocomplete.cut(msg, words[0]))
+
+                else
+
+                    words.unshift("#{words.length} possibilities:")
+                    @say(["color-autocomplete", words.join("<br>")])
+
                 e.preventDefault()
 
+            when 38  # up
 
-    autocomplete: () ->
+                if @history.length() > 0
 
-        msg = @tabs.active.prefix + $(@input_id).val().trim()
-        # $(@input_id).val("")
+                    $(@input_id).val(@history.up())
 
+                e.preventDefault()
+
+            when 40  # down
+
+                if @history.length() > 0
+
+                    $(@input_id).val(@history.down())
+
+                e.preventDefault()
 
 
     command: (cmd) ->
 
         ###
-            commands history
-            color-*
             tab-mode on/off
-            autocomplete
-            help
         ###
 
         cmd = cmd.split(" ")
@@ -329,13 +376,9 @@ class Dchat
 
                 @toggle_autoscroll()
 
-            when "commands-prefix"
+            when "help"
 
-                m = cmd[1..-1].join(" ")
-
-                if m isnt ""
-
-                    @commands_prefix = m[0]
+                @show_help()
 
             else
 
@@ -352,6 +395,11 @@ class Dchat
             $.get("init", @load_init_file, "text").error(() =>
                 @command("echo Initialization file 'init' missing.")
             )
+
+
+    show_help: () ->
+
+        @command("echo <pre>" + help_message.split("\n").join("<br>") + "</pre>")
 
 
 $(() ->
