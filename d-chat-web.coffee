@@ -53,6 +53,7 @@ class Dchat
                 phrase = ["color-text", phrase]
 
             [color, msg] = phrase
+            msg = @replace_all(@replace_all(msg, "<", "&lt;"), ">", "&gt;")
             html += "<span class='#{color}'>#{msg}</span>"
 
         html += "</div>"
@@ -171,7 +172,7 @@ class Dchat
                     ["color-delimiter", "*"],
                     ["color-nickname", pack.username],
                     ["color-delimiter", ": "],
-                    ["color-text", @strip(pack.text)]
+                    ["color-text", pack.text]
                 )
 
             when "ID_CHANNEL"
@@ -188,7 +189,7 @@ class Dchat
                     ["color-delimiter", " -> "],
                     ["color-whisper-nickname", "*" + @account],
                     ["color-delimiter", ": "],
-                    ["color-whisper", @strip(pack.text)]
+                    ["color-whisper", pack.text]
                 )
 
             when "ID_WHISPERSENT"
@@ -198,7 +199,7 @@ class Dchat
                     ["color-delimiter", " -> "],
                     ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*" + pack.username],
                     ["color-delimiter", ": "],
-                    ["color-whisper", @strip(pack.text)]
+                    ["color-whisper", pack.text]
                 )
 
             when "ID_BROADCAST"
@@ -206,7 +207,7 @@ class Dchat
                 @say(
                     ["color-whisper-nickname", pack.username],
                     ["color-delimiter", ": "],
-                    ["color-whisper", @strip(pack.text)]
+                    ["color-whisper", pack.text]
                 )
 
 
@@ -262,14 +263,8 @@ class Dchat
         @command("echo Autoscroll set to #{@autoscroll}.")
 
 
-    strip: (msg) ->
-
-        return $("<div>" + msg + "</div>").text()
-
-
     common_message: (msg) =>
 
-        msg = @strip(msg)
         if msg isnt ""
 
             if msg[0] is @commands_prefix
@@ -399,7 +394,13 @@ class Dchat
 
     show_help: () ->
 
-        @command("echo <pre>" + help_message.split("\n").join("<br>") + "</pre>")
+        help_message.split("\n").map((s) => @command("echo " + s))
+        # @command("echo " + help_message)
+
+
+    replace_all: (str, find, replace) ->
+
+        return str.replace(new RegExp(find, 'g'), replace)
 
 
 $(() ->
