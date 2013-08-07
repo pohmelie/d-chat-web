@@ -3,6 +3,7 @@
 #= require <java-socket-bridge.coffee>
 #= require <history.coffee>
 #= require <autocomplete.coffee>
+#= require <intro.coffee>
 
 
 class Dchat
@@ -15,6 +16,13 @@ class Dchat
         @connected = false
         @autoscroll = true
         @account = null
+
+        @replacing_symbols = {
+            ">":"&gt;",
+            "<":"&lt;",
+            " ":"&nbsp;",
+            "\n":"<br>",
+        }
 
         @commands_list = [
             "echo",
@@ -41,7 +49,7 @@ class Dchat
         $(window).on("keydown", @global_key)
 
         @refresh_title()
-        @load_init_file()
+        @show_intro()
 
 
     say: (phrases...) ->
@@ -52,8 +60,11 @@ class Dchat
             if typeof(phrase) isnt "object"
                 phrase = ["color-text", phrase]
 
-            [color, msg] = phrase
-            msg = @replace_all(@replace_all(msg, "<", "&lt;"), ">", "&gt;")
+            [color, msg, raw] = phrase
+
+            if raw isnt true
+                msg = @prepare_string(msg)
+
             html += "<span class='#{color}'>#{msg}</span>"
 
         html += "</div>"
@@ -309,7 +320,7 @@ class Dchat
                 else
 
                     words.unshift("#{words.length} possibilities:")
-                    @say(["color-autocomplete", words.join("<br>")])
+                    @say(["color-autocomplete", words.join("\n")])
 
                 e.preventDefault()
 
@@ -394,13 +405,20 @@ class Dchat
 
     show_help: () ->
 
-        help_message.split("\n").map((s) => @command("echo " + s))
-        # @command("echo " + help_message)
+        @command("echo " + help_message)
 
 
-    replace_all: (str, find, replace) ->
+    prepare_string: (str) ->
 
-        return str.replace(new RegExp(find, 'g'), replace)
+        for find, replace of @replacing_symbols
+            str = str.replace(new RegExp(find, 'g'), replace)
+
+        return str
+
+
+    show_intro: () ->
+
+        @say(["color-text", intro, true])
 
 
 $(() ->

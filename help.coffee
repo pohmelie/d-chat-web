@@ -1,4 +1,5 @@
 help_message = """
+d-chat-web help information.
 Commands:
 
     \\echo message
@@ -41,5 +42,5 @@ Shortcuts:
         Browse commands history.
 
     tab
-        Request autocomplete. Autocompletes if there is one possibility, print all possibilities else.
+        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.
 """
