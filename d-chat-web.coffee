@@ -8,7 +8,7 @@
 
 class Dchat
 
-    constructor: (@tabs_id, @chat_id, @input_id, @commands_prefix="\\") ->
+    constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @commands_prefix="\\") ->
 
         @nicknames = {}
         @users_count = 0
@@ -36,7 +36,7 @@ class Dchat
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
 
         @history = new History()
-        @tabs = new ui.Tabs(@tabs_id, @chat_id, @input_id)
+        @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id)
         @bn = new bnet.Bnet(
             "rubattle.net",
             6112,
@@ -422,7 +422,7 @@ class Dchat
 
 
 $(() ->
-    dchat = new Dchat("#tabs", "#chat", "#input")
+    dchat = new Dchat("#tabs", "#chat", "#user-list", "#input")
     window.java_socket_bridge_on_receive = dchat.bn.on_packet
     window.java_socket_bridge_error = dchat.socket_error
     $(window).unload(java_socket_bridge_disconnect)

@@ -23,7 +23,7 @@ class ui
 
     class @Tabs
 
-        constructor: (@tabs_id, @chat_id, @input_id) ->
+        constructor: (@tabs_id, @chat_id, @user_list_id, @input_id) ->
 
             @tabs_float_index = 0
             @stylist = new Stylist()
@@ -120,9 +120,10 @@ class ui
                 10  # padding
             )
 
-            @stylist.css[@chat_id] = {
-                "height":"calc(100% - #{height}px)"
-            }
+            for id in [@chat_id, @user_list_id]
+                @stylist.css[id] = {
+                    "height":"calc(100% - #{height}px)"
+                }
 
             @stylist.update()
 
@@ -148,3 +149,8 @@ class ui
             if @tabs.length > 1
 
                 @set_active(@tabs[(@tabs.length + @index() - 1) % @tabs.length])
+
+
+    class @UserList
+
+        constructor: (@user_list_id) ->
