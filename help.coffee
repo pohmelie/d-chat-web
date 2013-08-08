@@ -15,10 +15,13 @@ Commands:
         Reloads 'init' file. 'init' file loads on start and simply executes like user input.
 
     \\autoscroll
-        Switch autoscroll on/off.
+        Switch autoscroll on/off. Default 'on'.
 
     \\help
         Show help information.
+
+    \\tab-mode
+        Switch tab-mode on/off. Default 'on'.
 
 
 Shortcuts:

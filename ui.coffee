@@ -39,7 +39,7 @@ class ui
 
             @tabs_float_index = 0
             @stylist = new Stylist()
-            @user_list = new ui.UserList(@user_list_id, @render_phrases)
+            @user_list = new ui.UserList(@user_list_id, @render_phrases, @input_id)
 
             @tabs = []
             @add("", "", "main", false)
@@ -53,13 +53,6 @@ class ui
 
             @stylist.update()
             @autosize()
-
-            $(".user-list-member").on(
-                "mouseup",
-                (e) =>
-                    console.log(e)
-            )
-
 
 
         get_tab: (username="main") ->
@@ -107,15 +100,16 @@ class ui
                 @tabs_float_index += 1
 
             id = "tab" + @tabs_float_index.toString()
-            tab = new ui.Tab(title, prefix, username, "#" + id, closeable)
+            tab = new ui.Tab(title, prefix, username, "##{id}", closeable)
             @tabs.push(tab)
 
             $(@tabs_id).append("<span id=#{id}></span> ")
-            $("#" + id).addClass("tab border color-border color-text").html(title)
+            $("##{id}").addClass("tab border color-border color-text").html(title)
 
-            $("#" + id).on(
+            $("##{id}").on(
                 "mouseup",
                 (e) =>
+
                     switch e.which
 
                         when 1
@@ -207,12 +201,16 @@ class ui
 
     class @UserList
 
-        constructor: (@user_list_id, @render_phrases) ->
+        constructor: (@user_list_id, @render_phrases, @input_id) ->
 
             @clear()
 
 
         add: (username, nickname) ->
+
+            if @mem[username]?
+
+                return
 
             msgs = [
                 ["color-delimiter", "*"],
@@ -226,22 +224,22 @@ class ui
                 )
 
             msg = @render_phrases(msgs...)
+            @mem[username] = @internal_id
+            id = "#{@user_list_id.substr(1)}-member-#{@mem[username]}"
+            $(@user_list_id).append("<div id='#{id}' class='user-list-member'>#{msg}</div>")
 
-            if @mem[username]?
+            $("##{id}").on(
+                "mouseup",
+                (e) =>
 
-                $("#{@user_list_id}-member-#{@mem[username]}").html(msg)
+                    if e.which == 1
 
-            else
+                        $(@input_id).val("/w *#{username} ")
 
-                @mem[username] = @internal_id
-                $(@user_list_id).append("""
-                    <div
-                            id='#{@user_list_id.substr(1)}-member-#{@mem[username]}'
-                            class='user-list-member'>
-                        #{msg}
-                    </div>
-                """)
-                @internal_id = @internal_id + 1
+                    e.preventDefault()
+            )
+
+            @internal_id = @internal_id + 1
 
 
         remove: (username) ->

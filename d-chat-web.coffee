@@ -53,6 +53,7 @@ class Dchat
         @refresh_title()
         @show_intro()
 
+
     render_phrases: (phrases...) =>
 
         html = ""
@@ -132,6 +133,12 @@ class Dchat
             @channel = null
             @refresh_title()
             @tabs.user_list.clear()
+
+            for k, v of @nicknames
+
+                @autocomplete.remove("*#{k}")
+
+            @nicknames = {}
 
 
     refresh_title: () =>
