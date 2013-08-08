@@ -72,14 +72,19 @@ class ui
 
                 tab.add(html)
                 if tab is @active
+
                     $(@chat_id).append(html)
-                else
+
+                else if tab isnt @main
+
                     tab.unread += 1
 
                 if (scroll_down)
+
                     $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
 
                 if tab isnt @main
+
                     tab.refresh_title()
                     @refresh_main_title()
 
