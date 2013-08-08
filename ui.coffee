@@ -23,10 +23,11 @@ class ui
 
     class @Tabs
 
-        constructor: (@tabs_id, @chat_id, @user_list_id, @input_id) ->
+        constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases) ->
 
             @tabs_float_index = 0
             @stylist = new Stylist()
+            @user_list = new ui.UserList(@user_list_id, @render_phrases)
 
             @tabs = []
             @add("", "", false)
@@ -43,13 +44,17 @@ class ui
             @autosize()
 
 
+        whisper: (username, html, scroll_down=true) ->
+
+
         echo: (html, scroll_down=true) ->
 
-            @active.add(html)
-            $(@chat_id).append(html)
+            @main.add(html)
+            if @main is @active
+                $(@chat_id).append(html)
 
-            if(scroll_down)
-                $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
+                if(scroll_down)
+                    $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
 
 
         add: (title="", prefix="", account="", closeable=true) ->
@@ -132,7 +137,7 @@ class ui
 
             for i in [0...@tabs.length]
 
-                if @active is @tabs[i]
+                if tab is @tabs[i]
 
                     return i
 
@@ -153,4 +158,53 @@ class ui
 
     class @UserList
 
-        constructor: (@user_list_id) ->
+        constructor: (@user_list_id, @render_phrases) ->
+
+            @clear()
+
+
+        add: (username, nickname) ->
+
+            msgs = [
+                ["color-delimiter", "*"],
+                ["color-user-list-account", username]
+            ]
+
+            if nickname != ""
+
+                msgs.push(
+                    ["color-user-list-nickname", " (#{nickname})"]
+                )
+
+            msg = @render_phrases(msgs...)
+
+            if @mem[username]?
+
+                $("#{@user_list_id}-member-#{@mem[username]}").html(msg)
+
+            else
+
+                @mem[username] = @internal_id
+                $(@user_list_id).append("""
+                    <div
+                            id='#{@user_list_id.substr(1)}-member-#{@mem[username]}'
+                            class='user-list-member'>
+                        #{msg}
+                    </div>
+                """)
+                @internal_id = @internal_id + 1
+
+
+        remove: (username) ->
+
+            if @mem[username]?
+
+                $("#{@user_list_id}-member-#{@mem[username]}").remove()
+                delete @mem[username]
+
+
+        clear: () ->
+
+            $(@user_list_id).html("")
+            @internal_id = 0
+            @mem = {}

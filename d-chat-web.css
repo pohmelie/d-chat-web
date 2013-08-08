@@ -51,11 +51,11 @@
 }
 
 .color-autocomplete {
-	color:#66747b
+	color:#66747b;
 }
 
 .color-echo {
-	color:#86949b
+	color:#86949b;
 }
 
 .color-border {
@@ -63,7 +63,16 @@
 }
 
 .color-active-tab-fore {
-    color:#293134
+    color:#293134;
+}
+
+.color-user-list-account {
+	/*color:#e6994d;*/
+	color:#bfbf00;
+}
+
+.color-user-list-nickname {
+	color:#86949b;
 }
 
 .tab:hover {
@@ -90,6 +99,10 @@
 	position:absolute;
 }
 
+.user-list-member:hover {
+	background-color:#333D41;
+}
+
 #container {
     height:calc(100% - 10px);
     padding:5px;
@@ -103,12 +116,6 @@
     width:calc(100% - 25px);
     font-family:'Open Sans';
 	font-size:100%;
-}
-
-#table-view {
-	padding:5px;
-	width:calc(100% - 10px);
-	height:200px;
 }
 
 #chat {

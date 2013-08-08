@@ -16,11 +16,12 @@ class Dchat
         @connected = false
         @autoscroll = true
         @account = null
+        @tab_mode = true
 
         @replacing_symbols = {
             ">":"&gt;",
             "<":"&lt;",
-            " ":"&nbsp;",
+            " ":"&nbsp;<wbr>",
             "\n":"<br>",
         }
 
@@ -36,7 +37,7 @@ class Dchat
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
 
         @history = new History()
-        @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id)
+        @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases)
         @bn = new bnet.Bnet(
             "rubattle.net",
             6112,
@@ -51,11 +52,10 @@ class Dchat
         @refresh_title()
         @show_intro()
 
+    render_phrases: (phrases...) =>
 
-    say: (phrases...) ->
-
-        html = "<div>"
-        for phrase in [["color-time", @time()]].concat(phrases)
+        html = ""
+        for phrase in phrases
 
             if typeof(phrase) isnt "object"
                 phrase = ["color-text", phrase]
@@ -67,8 +67,15 @@ class Dchat
 
             html += "<span class='#{color}'>#{msg}</span>"
 
-        html += "</div>"
-        @tabs.echo(html, @autoscroll)
+        return html
+
+
+    say: (phrases...) ->
+
+        @tabs.echo(
+            "<div>#{@render_phrases([['color-time', @time()]].concat(phrases)...)}</div>",
+            @autoscroll
+        )
 
 
     login_error: (stage, reason) =>
@@ -85,7 +92,7 @@ class Dchat
 
     socket_error: (msg) =>
 
-        @say(["color-error", "Java applet error: " + msg])
+        @say(["color-error", "Java applet error: #{msg}"])
         @disconnect()
         return
 
@@ -140,7 +147,7 @@ class Dchat
                 return x.toString()
         ).join(":")
 
-        return "[" + s + "] "
+        return "[#{s}] "
 
 
     chat_event: (pack) =>
@@ -159,12 +166,15 @@ class Dchat
                     @users_count += 1
 
                 @nicknames[pack.username] = nickname
-                @autocomplete.add("*" + pack.username)
+                @autocomplete.add("*#{pack.username}")
+                @tabs.user_list.add(pack.username, nickname)
                 @refresh_title()
 
             when "ID_LEAVE"
 
-                @nicknames[pack.username] = null
+                # @nicknames[pack.username] = null
+                delete @nicknames[pack.username]
+                @tabs.user_list.remove(pack.username)
                 @users_count -= 1
                 @refresh_title()
 
@@ -191,24 +201,31 @@ class Dchat
                 @channel = pack.text
                 @users_count = 0
                 @nicknames = {}
+                @tabs.user_list.clear()
                 @refresh_title()
 
             when "ID_WHISPER"
 
-                @say(
-                    ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*" + pack.username],
-                    ["color-delimiter", " -> "],
-                    ["color-whisper-nickname", "*" + @account],
-                    ["color-delimiter", ": "],
-                    ["color-whisper", pack.text]
-                )
+                if tab_mode
+
+                    tab_mode = tab_mode
+
+                else
+
+                    @say(
+                        ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*#{pack.username}"],
+                        ["color-delimiter", " -> "],
+                        ["color-whisper-nickname", "*#{@account}"],
+                        ["color-delimiter", ": "],
+                        ["color-whisper", pack.text]
+                    )
 
             when "ID_WHISPERSENT"
 
                 @say(
-                    ["color-whisper-nickname", "*" + @account],
+                    ["color-whisper-nickname", "*#{@account}"],
                     ["color-delimiter", " -> "],
-                    ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*" + pack.username],
+                    ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*#{pack.username}"],
                     ["color-delimiter", ": "],
                     ["color-whisper", pack.text]
                 )
@@ -405,7 +422,7 @@ class Dchat
 
     show_help: () ->
 
-        @command("echo " + help_message)
+        @command("echo #{help_message}")
 
 
     prepare_string: (str) ->
