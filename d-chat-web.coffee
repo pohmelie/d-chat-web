@@ -237,6 +237,8 @@ class Dchat
 
             when "ID_WHISPER"
 
+                console.log(pack)
+
                 if @tab_mode
 
                     @whisper(
