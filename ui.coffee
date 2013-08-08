@@ -170,7 +170,7 @@ class ui
                 $(@chat_id).outerHeight(true) +
                 $(@input_id).outerHeight(true) -
                 $(@chat_id).innerHeight() +
-                20  # padding
+                40  # padding
             )
 
             for id in [@chat_id, @user_list_id]
