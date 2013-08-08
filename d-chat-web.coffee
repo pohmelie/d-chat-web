@@ -237,13 +237,11 @@ class Dchat
 
             when "ID_WHISPER"
 
-                console.log(pack)
-
                 if @tab_mode
 
                     @whisper(
                         "*#{pack.username}",
-                        ["color-nickname", @nicknames[pack.username]],
+                        ["color-nickname", (@nicknames[pack.username] or "")],
                         ["color-delimiter", "*"],
                         ["color-nickname", pack.username],
                         ["color-delimiter", ": "],
