@@ -38,6 +38,9 @@ Shortcuts:
     ctrl + d
         Same as '\\disconnect'.
 
+    ctrl + m
+        Switch to main tab.
+
     up/down
         Browse commands history.
 

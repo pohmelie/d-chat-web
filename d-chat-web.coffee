@@ -37,7 +37,8 @@ class Dchat
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
 
         @history = new History()
-        @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases)
+        @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_title)
+        @tabs.set_active(@tabs.main)
         @bn = new bnet.Bnet(
             "rubattle.net",
             6112,
@@ -70,9 +71,18 @@ class Dchat
         return html
 
 
-    say: (phrases...) ->
+    echo: (phrases...) ->
 
         @tabs.echo(
+            "<div>#{@render_phrases([['color-time', @time()]].concat(phrases)...)}</div>",
+            @autoscroll
+        )
+
+
+    whisper: (username, phrases...) ->
+
+        @tabs.whisper(
+            username,
             "<div>#{@render_phrases([['color-time', @time()]].concat(phrases)...)}</div>",
             @autoscroll
         )
@@ -83,16 +93,16 @@ class Dchat
         reasons = ["Account doesn't exists", "Wrong password"]
 
         if reasons[reason - 1]?
-            @say(["color-error", "Login failed. #{reasons[reason - 1]}."])
+            @echo(["color-error", "Login failed. #{reasons[reason - 1]}."])
         else
-            @say(["color-error", "Login failed. (stage = #{stage}, reason = #{reason})."])
+            @echo(["color-error", "Login failed. (stage = #{stage}, reason = #{reason})."])
 
         @disconnect()
 
 
     socket_error: (msg) =>
 
-        @say(["color-error", "Java applet error: #{msg}"])
+        @echo(["color-error", "Java applet error: #{msg}"])
         @disconnect()
         return
 
@@ -121,20 +131,29 @@ class Dchat
             @users_count = 0
             @channel = null
             @refresh_title()
+            @tabs.user_list.clear()
 
 
-    refresh_title: () ->
+    refresh_title: () =>
 
         if @connected
 
-            msg = "#{@channel} (#{@users_count})"
+            total_unread = @tabs.tabs.reduce(((u, t) -> u + t.unread), 0)
+
+            if total_unread != 0
+
+                title = "[#{total_unread}] #{@channel} (#{@users_count})"
+
+            else
+
+                title = "#{@channel} (#{@users_count})"
 
         else
 
-            msg = "d-chat-web"
+            title = "d-chat-web"
 
-        @tabs.main.set_title(msg)
-        $(document).attr("title", msg)
+        @tabs.main.set_title(title)
+        $(document).attr("title", title)
 
 
     time: () ->
@@ -172,23 +191,23 @@ class Dchat
 
             when "ID_LEAVE"
 
-                # @nicknames[pack.username] = null
                 delete @nicknames[pack.username]
+                @autocomplete.remove("*#{pack.username}")
                 @tabs.user_list.remove(pack.username)
                 @users_count -= 1
                 @refresh_title()
 
             when "ID_INFO"
 
-                @say(["color-system", pack.text])
+                @echo(["color-system", pack.text])
 
             when "ID_ERROR"
 
-                @say(["color-error", pack.text])
+                @echo(["color-error", pack.text])
 
             when "ID_TALK", "ID_EMOTE"
 
-                @say(
+                @echo(
                     ["color-nickname", @nicknames[pack.username]],
                     ["color-delimiter", "*"],
                     ["color-nickname", pack.username],
@@ -200,19 +219,31 @@ class Dchat
 
                 @channel = pack.text
                 @users_count = 0
+
+                for k, v of @nicknames
+
+                    @autocomplete.remove("*#{k}")
+
                 @nicknames = {}
                 @tabs.user_list.clear()
                 @refresh_title()
 
             when "ID_WHISPER"
 
-                if tab_mode
+                if @tab_mode
 
-                    tab_mode = tab_mode
+                    @whisper(
+                        "*#{pack.username}",
+                        ["color-nickname", @nicknames[pack.username]],
+                        ["color-delimiter", "*"],
+                        ["color-nickname", pack.username],
+                        ["color-delimiter", ": "],
+                        ["color-text", pack.text]
+                    )
 
                 else
 
-                    @say(
+                    @echo(
                         ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*#{pack.username}"],
                         ["color-delimiter", " -> "],
                         ["color-whisper-nickname", "*#{@account}"],
@@ -222,17 +253,30 @@ class Dchat
 
             when "ID_WHISPERSENT"
 
-                @say(
-                    ["color-whisper-nickname", "*#{@account}"],
-                    ["color-delimiter", " -> "],
-                    ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*#{pack.username}"],
-                    ["color-delimiter", ": "],
-                    ["color-whisper", pack.text]
-                )
+                if @tab_mode
+
+                    @whisper(
+                        "*#{pack.username}",
+                        ["color-delimiter", "*"],
+                        ["color-nickname", @account],
+                        ["color-delimiter", ": "],
+                        ["color-text", pack.text]
+                    )
+                    @tabs.set_active(@tabs.get_tab("*#{pack.username}"))
+
+                else
+
+                    @echo(
+                        ["color-whisper-nickname", "*#{@account}"],
+                        ["color-delimiter", " -> "],
+                        ["color-whisper-nickname", (@nicknames[pack.username] or "") + "*#{pack.username}"],
+                        ["color-delimiter", ": "],
+                        ["color-whisper", pack.text]
+                    )
 
             when "ID_BROADCAST"
 
-                @say(
+                @echo(
                     ["color-whisper-nickname", pack.username],
                     ["color-delimiter", ": "],
                     ["color-whisper", pack.text]
@@ -276,6 +320,11 @@ class Dchat
                     @disconnect()
                     e.preventDefault()
 
+                when 77  # 'm'
+
+                    @tabs.set_active()
+                    e.preventDefault()
+
         else if e.which == 112
 
             @show_help()
@@ -305,7 +354,7 @@ class Dchat
 
                 if msg[0] isnt "/"
 
-                    @say(
+                    @echo(
                         ["color-delimiter", "*"],
                         ["color-nickname", @account],
                         ["color-delimiter", ": "],
@@ -337,7 +386,7 @@ class Dchat
                 else
 
                     words.unshift("#{words.length} possibilities:")
-                    @say(["color-autocomplete", words.join("\n")])
+                    @echo(["color-autocomplete", words.join("\n")])
 
                 e.preventDefault()
 
@@ -360,10 +409,6 @@ class Dchat
 
     command: (cmd) ->
 
-        ###
-            tab-mode on/off
-        ###
-
         cmd = cmd.split(" ")
 
         switch cmd[0].toLowerCase()
@@ -372,7 +417,7 @@ class Dchat
 
                 if cmd.length > 1
 
-                    @say(["color-echo", cmd[1..-1].join(" ")])
+                    @echo(["color-echo", cmd[1..-1].join(" ")])
 
             when "connect"
 
@@ -403,9 +448,24 @@ class Dchat
 
                 @show_help()
 
+            when "tab-mode"
+
+                @toggle_tab_mode()
+
             else
 
                 @command("echo Unknown command '#{cmd[0].toLowerCase()}'.")
+
+
+    toggle_tab_mode: () ->
+
+        @tab_mode = not @tab_mode
+        @command("echo Tab mode set to #{@tab_mode}.")
+
+        if not @tab_mode
+
+            @tabs.tabs.filter((t) -> t.closeable).forEach(@tabs.remove)
+            @refresh_title()
 
 
     load_init_file: (data) =>
@@ -435,7 +495,7 @@ class Dchat
 
     show_intro: () ->
 
-        @say(["color-text", intro, true])
+        @echo(["color-text", intro, true])
 
 
 $(() ->

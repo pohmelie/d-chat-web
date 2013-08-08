@@ -12,6 +12,11 @@ class Autocomplete
             @words.sort()
 
 
+    remove: (word) ->
+
+        @words = @words.filter((w) -> w != word)
+
+
     filter: (msg) ->
 
         word = msg.split(" ").pop()

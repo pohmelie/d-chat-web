@@ -121,14 +121,14 @@
 #chat {
 	overflow:auto;
 	padding:5px;
-	width:calc(75% - 25px);
+	width:calc(70% - 25px);
 	display:inline-block;
 }
 
 #user-list {
 	overflow:auto;
 	padding:5px;
-	width:calc(25% - 25px);
+	width:calc(30% - 25px);
 	display:inline-block;
 }
 

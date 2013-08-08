@@ -5,10 +5,11 @@ class ui
 
     class @Tab
 
-        constructor: (@title, @prefix, @account, @id, @closeable=true) ->
+        constructor: (@title, @prefix, @username, @id, @closeable=true) ->
 
             @html = []
             @input = ""
+            @unread = 0
 
 
         add: (html) ->
@@ -21,16 +22,27 @@ class ui
             $(@id).html(@title)
 
 
+        refresh_title: () ->
+
+            if @unread != 0
+
+                @set_title("[#{@unread}] #{@username}")
+
+            else
+
+                @set_title("#{@username}")
+
+
     class @Tabs
 
-        constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases) ->
+        constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_main_title) ->
 
             @tabs_float_index = 0
             @stylist = new Stylist()
             @user_list = new ui.UserList(@user_list_id, @render_phrases)
 
             @tabs = []
-            @add("", "", false)
+            @add("", "", "main", false)
 
             @main = @active = @tabs[0]
 
@@ -40,37 +52,69 @@ class ui
             }
 
             @stylist.update()
-            @set_active(@main)
             @autosize()
+
+            $(".user-list-member").on(
+                "mouseup",
+                (e) =>
+                    console.log(e)
+            )
+
+
+
+        get_tab: (username="main") ->
+
+            for tab in @tabs
+
+                if tab.username == username
+
+                    return tab
 
 
         whisper: (username, html, scroll_down=true) ->
 
+            tab = @get_tab(username)
+
+            if tab?
+
+                tab.add(html)
+                if tab is @active
+                    $(@chat_id).append(html)
+                else
+                    tab.unread += 1
+
+                if (scroll_down)
+                    $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
+
+                if tab isnt @main
+                    tab.refresh_title()
+                    @refresh_main_title()
+
+                return
+
+            @add("", "/w #{username} ", username)
+            @whisper(username, html, scroll_down)
+
 
         echo: (html, scroll_down=true) ->
 
-            @main.add(html)
-            if @main is @active
-                $(@chat_id).append(html)
-
-                if(scroll_down)
-                    $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
+            @whisper("main", html, scroll_down)
 
 
-        add: (title="", prefix="", account="", closeable=true) ->
+        add: (title, prefix, username, closeable=true) ->
 
             while $("#tab" + @tabs_float_index.toString()).length != 0
                 @tabs_float_index += 1
 
             id = "tab" + @tabs_float_index.toString()
-            tab = new ui.Tab(title, prefix, account, "#" + id, closeable)
+            tab = new ui.Tab(title, prefix, username, "#" + id, closeable)
             @tabs.push(tab)
 
             $(@tabs_id).append("<span id=#{id}></span> ")
             $("#" + id).addClass("tab border color-border color-text").html(title)
 
             $("#" + id).on(
-                "mousedown",
+                "mouseup",
                 (e) =>
                     switch e.which
 
@@ -86,7 +130,7 @@ class ui
             @autosize()
 
 
-        set_active: (tab) ->
+        set_active: (tab=@main) ->
 
             $(@active.id).removeClass("color-active-tab-back color-active-tab-fore")
             $(tab.id).addClass("color-active-tab-back color-active-tab-fore")
@@ -98,18 +142,23 @@ class ui
             $(@chat_id).html(@active.html.join(""))
             $(@chat_id).scrollTop($(@chat_id)[0].scrollHeight)
 
+            @active.unread = 0
+            @active.refresh_title()
+            @refresh_main_title()
+
             $(@input_id).focus()
 
 
-        remove: (tab=@active) ->
+        remove: (tab=@active) =>
 
             if tab.closeable == true
+
+                @tabs = @tabs.filter((t) -> t isnt tab)
 
                 if @active is tab
 
                     @set_active(@main)
 
-                @tabs = @tabs.filter((t) -> t isnt tab)
                 $(tab.id).remove()
 
                 @autosize()
