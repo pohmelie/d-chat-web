@@ -305,7 +305,7 @@
           tab.add(html);
           if (tab === this.active) {
             $(this.chat_id).append(html);
-          } else {
+          } else if (tab !== this.main) {
             tab.unread += 1;
           }
           if (scroll_down) {
