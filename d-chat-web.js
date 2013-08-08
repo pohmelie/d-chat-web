@@ -1900,7 +1900,7 @@
           return this.refresh_title();
         case "ID_WHISPER":
           if (this.tab_mode) {
-            return this.whisper("*" + pack.username, ["color-nickname", this.nicknames[pack.username]], ["color-delimiter", "*"], ["color-nickname", pack.username], ["color-delimiter", ": "], ["color-text", pack.text]);
+            return this.whisper("*" + pack.username, ["color-nickname", this.nicknames[pack.username] || ""], ["color-delimiter", "*"], ["color-nickname", pack.username], ["color-delimiter", ": "], ["color-text", pack.text]);
           } else {
             return this.echo(["color-whisper-nickname", (this.nicknames[pack.username] || "") + ("*" + pack.username)], ["color-delimiter", " -> "], ["color-whisper-nickname", "*" + this.account], ["color-delimiter", ": "], ["color-whisper", pack.text]);
           }
