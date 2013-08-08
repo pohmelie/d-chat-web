@@ -235,6 +235,7 @@ class ui
                     if e.which == 1
 
                         $(@input_id).val("/w *#{username} ")
+                        $(@input_id).focus()
 
                     e.preventDefault()
             )
