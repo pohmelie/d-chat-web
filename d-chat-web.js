@@ -390,7 +390,7 @@
 
       Tabs.prototype.autosize = function() {
         var height, id, _i, _len, _ref;
-        height = $(this.tabs_id).outerHeight(true) + $(this.chat_id).outerHeight(true) + $(this.input_id).outerHeight(true) - $(this.chat_id).innerHeight() + 40;
+        height = $(this.tabs_id).outerHeight(true) + $(this.chat_id).outerHeight(true) + $(this.input_id).outerHeight(true) - $(this.chat_id).innerHeight() + 30;
         _ref = [this.chat_id, this.user_list_id];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           id = _ref[_i];
