@@ -40,7 +40,7 @@ class Dchat
 
         @history = new History()
         @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_title)
-        @tabs.set_active(@tabs.main)
+7        @tabs.set_active(@tabs.main)
         @bn = new bnet.Bnet(
             "rubattle.net",
             6112,
