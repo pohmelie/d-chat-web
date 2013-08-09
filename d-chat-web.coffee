@@ -10,6 +10,8 @@ class Dchat
 
     constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @commands_prefix="\\") ->
 
+        @max_symbols = 199
+
         @nicknames = {}
         @users_count = 0
         @channel = null
@@ -357,7 +359,11 @@ class Dchat
 
             else if @connected and @channel?
 
-                @bn.say(msg)
+                smsg = msg
+                while smsg != ""
+
+                    @bn.say(smsg.substr(0, @max_symbols)
+                    smsg = smsg.substr(@max_symbols)
 
                 if msg[0] isnt "/"
 
