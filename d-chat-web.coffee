@@ -40,7 +40,7 @@ class Dchat
 
         @history = new History()
         @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_title)
-7        @tabs.set_active(@tabs.main)
+        @tabs.set_active(@tabs.main)
         @bn = new bnet.Bnet(
             "rubattle.net",
             6112,
@@ -362,7 +362,7 @@ class Dchat
                 smsg = msg
                 while smsg != ""
 
-                    @bn.say(smsg.substr(0, @max_symbols)
+                    @bn.say(smsg.substr(0, @max_symbols))
                     smsg = smsg.substr(@max_symbols)
 
                 if msg[0] isnt "/"
