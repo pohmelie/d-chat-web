@@ -4,6 +4,7 @@
 #= require <history.coffee>
 #= require <autocomplete.coffee>
 #= require <intro.coffee>
+#= require <autotrade.coffee>
 
 
 class Dchat
@@ -34,9 +35,15 @@ class Dchat
             "reload",
             "autoscroll",
             "help",
-            "tab-mode"
+            "tab-mode",
+            "autotrade-message",
+            "autotrade-timeout",
+            "autotrade-activity",
+            "autotrade-start",
+            "autotrade-stop"
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
+        @autotrade = new Autotrade(@common_message)
 
         @history = new History()
         @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_title)
@@ -223,6 +230,7 @@ class Dchat
                     ["color-delimiter", ": "],
                     ["color-text", pack.text]
                 )
+                @autotrade.trigger_activity()
 
             when "ID_CHANNEL"
 
@@ -316,7 +324,7 @@ class Dchat
 
                 when 83  # 's'
 
-                    @toggle_autoscroll()
+                    @toggle_autotrade()
                     e.preventDefault()
 
                 when 82  # 'r'
@@ -341,6 +349,17 @@ class Dchat
 
 
         console.log(e.currentTarget, e.which, e.ctrlKey, e.altKey, e.shiftKey)
+
+
+    toggle_autotrade: () ->
+
+        if @autotrade.running
+
+            @command("autotrade-stop")
+
+        else
+
+            @command("autotrade-start")
 
 
     toggle_autoscroll: () ->
@@ -396,10 +415,15 @@ class Dchat
 
                     $(@input_id).val(msg + @autocomplete.cut(msg, words[0]))
 
-                else
+                else if words.length > 1
 
-                    words.unshift("#{words.length} possibilities:")
-                    @echo(["color-autocomplete", words.join("\n")])
+                    common = @autocomplete.cut(msg, @autocomplete.common(words))
+                    $(@input_id).val(msg + common)
+
+                    if common.length == 0
+
+                        words.unshift("#{words.length} possibilities:")
+                        @echo(["color-autocomplete", words.join("\n")])
 
                 e.preventDefault()
 
@@ -464,6 +488,45 @@ class Dchat
             when "tab-mode"
 
                 @toggle_tab_mode()
+
+            when "autotrade-message"
+
+                if cmd.length > 1
+
+                    @autotrade.msg = cmd[1..-1].join(" ")
+
+                @command("echo Current autotrade message is '#{@autotrade.msg}'.")
+
+            when "autotrade-timeout"
+
+                if cmd.length > 1
+
+                    t = parseInt(cmd[1])
+
+                    if isNaN(t) or t <= 0
+
+                        @command("echo Bad number '#{cmd[1]}'.")
+
+                    else
+
+                        @autotrade.timeout = t
+
+                @command("echo Current autotrade timeout is '#{@autotrade.timeout}'.")
+
+            when "autotrade-activity"
+
+                @autotrade.use_activity = not @autotrade.use_activity
+                @command("echo Autotrade use-activity set to '#{@autotrade.use_activity}'.")
+
+            when "autotrade-start"
+
+                @command("echo Autotrade started with message = '#{@autotrade.msg}' and timeout = '#{@autotrade.timeout}'.")
+                @autotrade.start()
+
+            when "autotrade-stop"
+
+                @command("echo Autotrade stopped.")
+                @autotrade.stop()
 
             else
 

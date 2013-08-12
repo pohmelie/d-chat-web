@@ -23,6 +23,21 @@ Commands:
     \\tab-mode
         Switch tab-mode on/off. Default 'on'.
 
+    \\autotrade-message message
+        Set autotrade message.
+
+    \\autotrade-timeout timeout
+        Set autotrade timeout in seconds.
+
+    \\autotrade-activity
+        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.
+
+    \\autotrade-start
+        Start autotrade loop.
+
+    \\autotrade-stop
+        Stop autotrade loop.
+
 
 Shortcuts:
 
@@ -33,7 +48,7 @@ Shortcuts:
         Close current tab.
 
     ctrl + s
-        Same as '\\autoscroll'.
+        Switch autotrade on/off.
 
     ctrl + r
         Same as '\\reload'.
