@@ -40,7 +40,8 @@ class Dchat
             "autotrade-timeout",
             "autotrade-activity",
             "autotrade-start",
-            "autotrade-stop"
+            "autotrade-stop",
+            "autotrade-info"
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
         @autotrade = new Autotrade(@common_message)
@@ -342,6 +343,11 @@ class Dchat
                     @tabs.set_active()
                     e.preventDefault()
 
+                when 73  # 'i'
+
+                    @command("autotrade-info")
+                    e.preventDefault()
+
         else if e.which == 112
 
             @show_help()
@@ -527,6 +533,17 @@ class Dchat
 
                 @command("echo Autotrade stopped.")
                 @autotrade.stop()
+
+            when "autotrade-info"
+
+                @command("""
+                echo Autotrade info:
+                running = #{@autotrade.running}
+                message = #{@autotrade.msg}
+                time = #{@autotrade.current_time}/#{@autotrade.timeout}
+                use activity = #{@autotrade.use_activity}
+                activity = #{@autotrade.activity}
+                """)
 
             else
 

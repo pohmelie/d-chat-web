@@ -38,6 +38,9 @@ Commands:
     \\autotrade-stop
         Stop autotrade loop.
 
+    \\autotrade-info
+        Show current state of autotrade.
+
 
 Shortcuts:
 
@@ -55,6 +58,9 @@ Shortcuts:
 
     ctrl + d
         Same as '\\disconnect'.
+
+    ctrl + i
+        Same as '\\autotrade-info'.
 
     ctrl + m
         Switch to main tab.

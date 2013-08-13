@@ -2,6 +2,11 @@ class Autotrade
 
     constructor: (@say, @msg="N enigma free PLZ PLZ!!", @use_activity=true, @timeout=300) ->
 
+        @running = false
+        @current_time = 0
+        @activity = false
+
+
     timer: () =>
 
         if @running
