@@ -1429,7 +1429,7 @@
 
   })();
 
-  help_message = "d-chat-web help information.\nCommands:\n\n    \\echo message\n        Print message to screen without sending to battle.net.\n\n    \\connect account password\n        Disconnect if connected and connect to battle.net.\n\n    \\disconnect\n        Disconnect from battle.net.\n\n    \\reload\n        Reloads 'init' file. 'init' file loads on start and simply executes like user input.\n\n    \\autoscroll\n        Switch autoscroll on/off. Default 'on'.\n\n    \\help\n        Show help information.\n\n    \\tab-mode\n        Switch tab-mode on/off. Default 'on'.\n\n    \\autotrade-message message\n        Set autotrade message.\n\n    \\autotrade-timeout timeout\n        Set autotrade timeout in seconds.\n\n    \\autotrade-activity\n        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.\n\n    \\autotrade-start\n        Start autotrade loop.\n\n    \\autotrade-stop\n        Stop autotrade loop.\n\n\nShortcuts:\n\n    ctrl + right/left\n        Switch to next/previous tab.\n\n    ctrl + w\n        Close current tab.\n\n    ctrl + s\n        Switch autotrade on/off.\n\n    ctrl + r\n        Same as '\\reload'.\n\n    ctrl + d\n        Same as '\\disconnect'.\n\n    ctrl + m\n        Switch to main tab.\n\n    up/down\n        Browse commands history.\n\n    tab\n        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.";
+  help_message = "d-chat-web help information.\nCommands:\n\n    \\echo message\n        Print message to screen without sending to battle.net.\n\n    \\connect account password\n        Disconnect if connected and connect to battle.net.\n\n    \\disconnect\n        Disconnect from battle.net.\n\n    \\reload\n        Reloads 'init' file. 'init' file loads on start and simply executes like user input.\n\n    \\autoscroll\n        Switch autoscroll on/off. Default 'on'.\n\n    \\help\n        Show help information.\n\n    \\tab-mode\n        Switch tab-mode on/off. Default 'on'.\n\n    \\autotrade-message message\n        Set autotrade message.\n\n    \\autotrade-timeout timeout\n        Set autotrade timeout in seconds.\n\n    \\autotrade-activity\n        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.\n\n    \\autotrade-start\n        Start autotrade loop.\n\n    \\autotrade-stop\n        Stop autotrade loop.\n\n    \\autotrade-info\n        Show current state of autotrade.\n\n\nShortcuts:\n\n    ctrl + right/left\n        Switch to next/previous tab.\n\n    ctrl + w\n        Close current tab.\n\n    ctrl + s\n        Switch autotrade on/off.\n\n    ctrl + r\n        Same as '\\reload'.\n\n    ctrl + d\n        Same as '\\disconnect'.\n\n    ctrl + i\n        Same as '\\autotrade-info'.\n\n    ctrl + m\n        Switch to main tab.\n\n    up/down\n        Browse commands history.\n\n    tab\n        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.";
 
   bnutil = (function() {
     function bnutil() {}
@@ -1721,6 +1721,9 @@
       this.use_activity = use_activity != null ? use_activity : true;
       this.timeout = timeout != null ? timeout : 300;
       this.timer = __bind(this.timer, this);
+      this.running = false;
+      this.current_time = 0;
+      this.activity = false;
     }
 
     Autotrade.prototype.timer = function() {
@@ -1793,7 +1796,7 @@
         " ": "&nbsp;<wbr>",
         "\n": "<br>"
       };
-      this.commands_list = ["echo", "connect", "disconnect", "reload", "autoscroll", "help", "tab-mode", "autotrade-message", "autotrade-timeout", "autotrade-activity", "autotrade-start", "autotrade-stop"];
+      this.commands_list = ["echo", "connect", "disconnect", "reload", "autoscroll", "help", "tab-mode", "autotrade-message", "autotrade-timeout", "autotrade-activity", "autotrade-start", "autotrade-stop", "autotrade-info"];
       this.autocomplete = new Autocomplete(this.commands_list.map(function(c) {
         return _this.commands_prefix + c;
       }));
@@ -2013,6 +2016,10 @@
           case 77:
             this.tabs.set_active();
             e.preventDefault();
+            break;
+          case 73:
+            this.command("autotrade-info");
+            e.preventDefault();
         }
       } else if (e.which === 112) {
         this.show_help();
@@ -2142,6 +2149,8 @@
         case "autotrade-stop":
           this.command("echo Autotrade stopped.");
           return this.autotrade.stop();
+        case "autotrade-info":
+          return this.command("echo Autotrade info:\nrunning = " + this.autotrade.running + "\nmessage = " + this.autotrade.msg + "\ntime = " + this.autotrade.current_time + "/" + this.autotrade.timeout + "\nuse activity = " + this.autotrade.use_activity + "\nactivity = " + this.autotrade.activity);
         default:
           return this.command("echo Unknown command '" + (cmd[0].toLowerCase()) + "'.");
       }
