@@ -41,6 +41,41 @@ Commands:
     \\autotrade-info
         Show current state of autotrade.
 
+    \\calc actions
+        Stack oriented rune calculator without memory. 'actions' — space-separated sequence of commands. Available commands:
+
+            count {'pul', ..., 'jah'}
+                Put 'count' (1 if omitted) runes on stack. You can only use runes from 'pul' to 'jah'.
+
+            p
+                Print stack with \"highest\" rune 'jah'.
+
+            to {'pul', ..., 'jah'}
+                Print stack with specified \"highest\" rune.
+
+            c
+                Clear stack.
+
+            t
+                Show stack size in \"trains\" (7 mules average hellforge rune drop).
+
+            count'%'
+                Print 'count' percents of stack.
+
+        Example:
+
+            Input:
+                \\calc 15 pul um p -1 pul p to ist 25% t c t
+
+            Output:
+                1 gul, 1 pul
+                1 gul
+                2 ist
+                25% of stack = 1 mal
+                Trains count: 1
+                Trains count: 0
+                Stack: stack is empty.
+
 
 Shortcuts:
 

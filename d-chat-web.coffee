@@ -5,6 +5,7 @@
 #= require <autocomplete.coffee>
 #= require <intro.coffee>
 #= require <autotrade.coffee>
+#= require <calc.coffee>
 
 
 class Dchat
@@ -41,7 +42,8 @@ class Dchat
             "autotrade-activity",
             "autotrade-start",
             "autotrade-stop",
-            "autotrade-info"
+            "autotrade-info",
+            "calc"
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
         @autotrade = new Autotrade(@common_message)
@@ -544,6 +546,10 @@ class Dchat
                 use activity = #{@autotrade.use_activity}
                 activity = #{@autotrade.activity}
                 """)
+
+            when "calc"
+
+                @command("echo #{Calculator.calc(cmd[1..-1])}")
 
             else
 
