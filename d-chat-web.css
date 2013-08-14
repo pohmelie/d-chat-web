@@ -127,7 +127,8 @@
 }
 
 #user-list {
-	overflow:auto;
+	overflow-x:auto;
+	overflow-y:scroll;
 	padding:5px;
 	width:calc(30% - 25px);
 	display:inline-block;
