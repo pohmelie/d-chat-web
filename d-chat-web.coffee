@@ -18,9 +18,10 @@ class Dchat
         @users_count = 0
         @channel = null
         @connected = false
-        @autoscroll = true
-        @account = null
-        @tab_mode = true
+        @autoscroll = localStorage.autoscroll or true
+        @account = localStorage.account
+        @hashed_password = JSON.parse(localStorage.hashed_password)
+        @tab_mode = localStorage.tab_mode or true
 
         @replacing_symbols = {
             ">":"&gt;",
@@ -46,7 +47,12 @@ class Dchat
             "calc"
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
-        @autotrade = new Autotrade(@common_message)
+        @autotrade = new Autotrade(
+            @common_message,
+            localStorage.autotrade_msg or "N enigma free PLZ PLZ!!",
+            localStorage.autotrade_use_activity or true,
+            localStorage.autotrade_timeout or 300
+        )
 
         @history = new History()
         @tabs = new ui.Tabs(@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_title)
@@ -64,6 +70,14 @@ class Dchat
 
         @refresh_title()
         @show_intro()
+
+        if @account? and @hashed_password?
+
+            @command("connect")
+
+        if localStorage.autotrade is true
+
+            @command("autotrade-start")
 
 
     render_phrases: (phrases...) =>
@@ -120,19 +134,19 @@ class Dchat
         return
 
 
-    connect: (acc, pass) =>
+    connect: (acc, pass, hashed=false) =>
 
         @disconnect()
 
         if java_socket_bridge_ready_flag
 
             @command("echo Connecting...")
-            @bn.login(acc, pass)
+            @bn.login(acc, pass, hashed)
             @connected = true
 
         else
 
-            setTimeout((() => @connect(acc, pass)), 100)
+            setTimeout((() => @connect(acc, pass, hashed)), 100)
 
 
     disconnect: () ->
@@ -470,8 +484,14 @@ class Dchat
 
                 if acc? and pass?
 
-                    @account = acc
+                    localStorage.account = @account = acc
                     @connect(acc, pass)
+                    localStorage.hashed_password = JSON.stringify(@bn.hashpass)
+
+                else if localStorage.account? and localStorage.hashed_password?
+
+                    @account = localStorage.account
+                    @connect(localStorage.account, JSON.parse(localStorage.hashed_password), true)
 
                 else
 
@@ -501,7 +521,7 @@ class Dchat
 
                 if cmd.length > 1
 
-                    @autotrade.msg = cmd[1..-1].join(" ")
+                    localStorage.autotrade_msg = @autotrade.msg = cmd[1..-1].join(" ")
 
                 @command("echo Current autotrade message is '#{@autotrade.msg}'.")
 
@@ -517,24 +537,26 @@ class Dchat
 
                     else
 
-                        @autotrade.timeout = t
+                        localStorage.autotrade_timeout = @autotrade.timeout = t
 
                 @command("echo Current autotrade timeout is '#{@autotrade.timeout}'.")
 
             when "autotrade-activity"
 
-                @autotrade.use_activity = not @autotrade.use_activity
+                localStorage.autotrade_use_activity = @autotrade.use_activity = not @autotrade.use_activity
                 @command("echo Autotrade use-activity set to '#{@autotrade.use_activity}'.")
 
             when "autotrade-start"
 
                 @command("echo Autotrade started with message = '#{@autotrade.msg}' and timeout = '#{@autotrade.timeout}'.")
                 @autotrade.start()
+                localStorage.autotrade = true
 
             when "autotrade-stop"
 
                 @command("echo Autotrade stopped.")
                 @autotrade.stop()
+                localStorage.autotrade = false
 
             when "autotrade-info"
 

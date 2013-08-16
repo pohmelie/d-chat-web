@@ -15,9 +15,16 @@ class bnet
             @lock = false
 
 
-        login: (@username, password) =>
+        login: (@username, password, hashed) =>
 
-            @hashpass = xsha1.bsha1(convert.str2bin(password))
+            if hashed
+
+                @hashpass = password
+
+            else
+
+                @hashpass = xsha1.bsha1(convert.str2bin(password))
+
             @head = []
 
             if not @connect(@host, @port)
