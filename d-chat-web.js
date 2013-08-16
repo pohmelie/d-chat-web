@@ -1500,9 +1500,13 @@
         this.lock = false;
       }
 
-      Bnet.prototype.login = function(username, password) {
+      Bnet.prototype.login = function(username, password, hashed) {
         this.username = username;
-        this.hashpass = xsha1.bsha1(convert.str2bin(password));
+        if (hashed) {
+          this.hashpass = password;
+        } else {
+          this.hashpass = xsha1.bsha1(convert.str2bin(password));
+        }
         this.head = [];
         if (!this.connect(this.host, this.port)) {
           this.login_error("Connecting to server");
@@ -1874,9 +1878,12 @@
       this.users_count = 0;
       this.channel = null;
       this.connected = false;
-      this.autoscroll = true;
-      this.account = null;
-      this.tab_mode = true;
+      this.autoscroll = localStorage.autoscroll || true;
+      this.account = localStorage.account;
+      if (localStorage.hashed_password != null) {
+        this.hashed_password = JSON.parse(localStorage.hashed_password);
+      }
+      this.tab_mode = localStorage.tab_mode || true;
       this.replacing_symbols = {
         ">": "&gt;",
         "<": "&lt;",
@@ -1887,7 +1894,7 @@
       this.autocomplete = new Autocomplete(this.commands_list.map(function(c) {
         return _this.commands_prefix + c;
       }));
-      this.autotrade = new Autotrade(this.common_message);
+      this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_use_activity || true, localStorage.autotrade_timeout || 300);
       this.history = new History();
       this.tabs = new ui.Tabs(this.tabs_id, this.chat_id, this.user_list_id, this.input_id, this.render_phrases, this.refresh_title);
       this.tabs.set_active(this.tabs.main);
@@ -1896,6 +1903,12 @@
       $(window).on("keydown", this.global_key);
       this.refresh_title();
       this.show_intro();
+      if ((this.account != null) && (this.hashed_password != null)) {
+        this.command("connect");
+      }
+      if (localStorage.autotrade === true) {
+        this.command("autotrade-start");
+      }
     }
 
     Dchat.prototype.render_phrases = function() {
@@ -1944,16 +1957,19 @@
       this.disconnect();
     };
 
-    Dchat.prototype.connect = function(acc, pass) {
+    Dchat.prototype.connect = function(acc, pass, hashed) {
       var _this = this;
+      if (hashed == null) {
+        hashed = false;
+      }
       this.disconnect();
       if (java_socket_bridge_ready_flag) {
         this.command("echo Connecting...");
-        this.bn.login(acc, pass);
+        this.bn.login(acc, pass, hashed);
         return this.connected = true;
       } else {
         return setTimeout((function() {
-          return _this.connect(acc, pass);
+          return _this.connect(acc, pass, hashed);
         }), 100);
       }
     };
@@ -2196,8 +2212,12 @@
             return x !== "";
           }), acc = _ref[0], pass = _ref[1];
           if ((acc != null) && (pass != null)) {
-            this.account = acc;
-            return this.connect(acc, pass);
+            localStorage.account = this.account = acc;
+            this.connect(acc, pass);
+            return localStorage.hashed_password = JSON.stringify(this.bn.hashpass);
+          } else if ((localStorage.account != null) && (localStorage.hashed_password != null)) {
+            this.account = localStorage.account;
+            return this.connect(localStorage.account, JSON.parse(localStorage.hashed_password), true);
           } else {
             return this.command("echo Can't connect without account name and password. Type '" + this.commands_prefix + "help' for more information.");
           }
@@ -2214,7 +2234,7 @@
           return this.toggle_tab_mode();
         case "autotrade-message":
           if (cmd.length > 1) {
-            this.autotrade.msg = cmd.slice(1).join(" ");
+            localStorage.autotrade_msg = this.autotrade.msg = cmd.slice(1).join(" ");
           }
           return this.command("echo Current autotrade message is '" + this.autotrade.msg + "'.");
         case "autotrade-timeout":
@@ -2223,19 +2243,21 @@
             if (isNaN(t) || t <= 0) {
               this.command("echo Bad number '" + cmd[1] + "'.");
             } else {
-              this.autotrade.timeout = t;
+              localStorage.autotrade_timeout = this.autotrade.timeout = t;
             }
           }
           return this.command("echo Current autotrade timeout is '" + this.autotrade.timeout + "'.");
         case "autotrade-activity":
-          this.autotrade.use_activity = !this.autotrade.use_activity;
+          localStorage.autotrade_use_activity = this.autotrade.use_activity = !this.autotrade.use_activity;
           return this.command("echo Autotrade use-activity set to '" + this.autotrade.use_activity + "'.");
         case "autotrade-start":
           this.command("echo Autotrade started with message = '" + this.autotrade.msg + "' and timeout = '" + this.autotrade.timeout + "'.");
-          return this.autotrade.start();
+          this.autotrade.start();
+          return localStorage.autotrade = true;
         case "autotrade-stop":
           this.command("echo Autotrade stopped.");
-          return this.autotrade.stop();
+          this.autotrade.stop();
+          return localStorage.autotrade = false;
         case "autotrade-info":
           return this.command("echo Autotrade info:\nrunning = " + this.autotrade.running + "\nmessage = " + this.autotrade.msg + "\ntime = " + this.autotrade.current_time + "/" + this.autotrade.timeout + "\nuse activity = " + this.autotrade.use_activity + "\nactivity = " + this.autotrade.activity);
         case "calc":
