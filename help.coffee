@@ -1,47 +1,47 @@
-help_message = """
+help_message = (delimiter) -> """
 d-chat-web help information.
 Commands:
 
-    \\echo message
+    #{delimiter}echo message
         Print message to screen without sending to battle.net.
 
-    \\connect account password
+    #{delimiter}connect account password
         Disconnect if connected and connect to battle.net.
 
-    \\disconnect
+    #{delimiter}disconnect
         Disconnect from battle.net.
 
-    \\reload
+    #{delimiter}reload
         Reloads 'init' file. 'init' file loads on start and simply executes like user input.
 
-    \\autoscroll
+    #{delimiter}autoscroll
         Switch autoscroll on/off. Default 'on'.
 
-    \\help
+    #{delimiter}help
         Show help information.
 
-    \\tab-mode
+    #{delimiter}tab-mode
         Switch tab-mode on/off. Default 'on'.
 
-    \\autotrade-message message
+    #{delimiter}autotrade-message message
         Set autotrade message.
 
-    \\autotrade-timeout timeout
+    #{delimiter}autotrade-timeout timeout
         Set autotrade timeout in seconds.
 
-    \\autotrade-activity
+    #{delimiter}autotrade-activity
         Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.
 
-    \\autotrade-start
+    #{delimiter}autotrade-start
         Start autotrade loop.
 
-    \\autotrade-stop
+    #{delimiter}autotrade-stop
         Stop autotrade loop.
 
-    \\autotrade-info
+    #{delimiter}autotrade-info
         Show current state of autotrade.
 
-    \\calc actions
+    #{delimiter}calc actions
         Stack oriented rune calculator without memory. 'actions' — space-separated sequence of commands. Available commands:
 
             count {'pul', ..., 'jah'}
@@ -65,7 +65,7 @@ Commands:
         Example:
 
             Input:
-                \\calc 15 pul um p -1 pul p to ist 25% t c t
+                #{delimiter}calc 15 pul um p -1 pul p to ist 25% t c t
 
             Output:
                 1 gul, 1 pul
@@ -75,6 +75,9 @@ Commands:
                 Trains count: 1
                 Trains count: 0
                 Stack: stack is empty.
+
+    #{delimiter}clear-local-storage
+        Erase local options.
 
 
 Shortcuts:
@@ -89,13 +92,13 @@ Shortcuts:
         Switch autotrade on/off.
 
     ctrl + r
-        Same as '\\reload'.
+        Same as '#{delimiter}reload'.
 
     ctrl + d
-        Same as '\\disconnect'.
+        Same as '#{delimiter}disconnect'.
 
     ctrl + i
-        Same as '\\autotrade-info'.
+        Same as '#{delimiter}autotrade-info'.
 
     ctrl + m
         Switch to main tab.

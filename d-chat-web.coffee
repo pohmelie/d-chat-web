@@ -48,7 +48,8 @@ class Dchat
             "autotrade-start",
             "autotrade-stop",
             "autotrade-info",
-            "calc"
+            "calc",
+            "clear-local-storage",
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
         @autotrade = new Autotrade(
@@ -577,6 +578,11 @@ class Dchat
 
                 @command("echo #{Calculator.calc(cmd[1..-1])}")
 
+            when "clear-local-storage"
+
+                localStorage.clear()
+                @command("echo Local storage erased.")
+
             else
 
                 @command("echo Unknown command '#{cmd[0].toLowerCase()}'.")
@@ -607,7 +613,7 @@ class Dchat
 
     show_help: () ->
 
-        @command("echo #{help_message}")
+        @command("echo #{help_message(@commands_prefix)}")
 
 
     prepare_string: (str) ->
