@@ -20,7 +20,11 @@ class Dchat
         @connected = false
         @autoscroll = localStorage.autoscroll or true
         @account = localStorage.account
-        @hashed_password = JSON.parse(localStorage.hashed_password)
+
+        if localStorage.hashed_password?
+
+            @hashed_password = JSON.parse(localStorage.hashed_password)
+
         @tab_mode = localStorage.tab_mode or true
 
         @replacing_symbols = {
