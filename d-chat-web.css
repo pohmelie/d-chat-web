@@ -121,6 +121,7 @@
 #chat {
 	overflow-x:auto;
 	overflow-y:scroll;
+	word-wrap:break-word;
 	padding:5px;
 	width:calc(70% - 25px);
 	display:inline-block;
@@ -129,6 +130,7 @@
 #user-list {
 	overflow-x:auto;
 	overflow-y:scroll;
+	word-wrap:break-word;
 	padding:5px;
 	width:calc(30% - 25px);
 	display:inline-block;
