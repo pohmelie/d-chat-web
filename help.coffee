@@ -79,6 +79,9 @@ Commands:
     #{delimiter}clear-local-storage
         Erase local options.
 
+    #{delimiter}clear-screen
+        Clear main tab.
+
 
 Shortcuts:
 

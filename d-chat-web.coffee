@@ -18,13 +18,19 @@ class Dchat
         @users_count = 0
         @channel = null
         @connected = false
-        @autoscroll = localStorage.autoscroll or true
-        @account = localStorage.account
 
         if localStorage.hashed_password?
 
-            @hashed_password = JSON.parse(localStorage.hashed_password)
+            try
 
+                @hashed_password = JSON.parse(localStorage.hashed_password)
+
+            catch
+
+                localStorage.clear()
+
+        @autoscroll = localStorage.autoscroll or true
+        @account = localStorage.account
         @tab_mode = localStorage.tab_mode or true
 
         @replacing_symbols = {
@@ -49,7 +55,8 @@ class Dchat
             "autotrade-stop",
             "autotrade-info",
             "calc",
-            "clear-local-storage",
+            "clear-local-storage"
+            "clear-screen",
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
         @autotrade = new Autotrade(
@@ -489,9 +496,13 @@ class Dchat
 
                 if acc? and pass?
 
-                    localStorage.account = @account = acc
                     @connect(acc, pass)
-                    localStorage.hashed_password = JSON.stringify(@bn.hashpass)
+
+                    if @bn.hashpass?
+
+                        localStorage.hashed_password = JSON.stringify(@bn.hashpass)
+                        localStorage.account = @account = acc
+
 
                 else if localStorage.account? and localStorage.hashed_password?
 
@@ -582,6 +593,11 @@ class Dchat
 
                 localStorage.clear()
                 @command("echo Local storage erased.")
+
+            when "clear-screen"
+
+                @tabs.main.clear()
+                @tabs.set_active()
 
             else
 

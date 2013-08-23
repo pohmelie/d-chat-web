@@ -33,6 +33,12 @@ class ui
                 @set_title("#{@username}")
 
 
+        clear: () ->
+
+            @html = []
+            @unread = 0
+
+
     class @Tabs
 
         constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @render_phrases, @refresh_main_title) ->
