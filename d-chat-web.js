@@ -252,6 +252,11 @@
         }
       };
 
+      Tab.prototype.clear = function() {
+        this.html = [];
+        return this.unread = 0;
+      };
+
       return Tab;
 
     })();
@@ -1430,7 +1435,7 @@
   })();
 
   help_message = function(delimiter) {
-    return "d-chat-web help information.\nCommands:\n\n    " + delimiter + "echo message\n        Print message to screen without sending to battle.net.\n\n    " + delimiter + "connect account password\n        Disconnect if connected and connect to battle.net.\n\n    " + delimiter + "disconnect\n        Disconnect from battle.net.\n\n    " + delimiter + "reload\n        Reloads 'init' file. 'init' file loads on start and simply executes like user input.\n\n    " + delimiter + "autoscroll\n        Switch autoscroll on/off. Default 'on'.\n\n    " + delimiter + "help\n        Show help information.\n\n    " + delimiter + "tab-mode\n        Switch tab-mode on/off. Default 'on'.\n\n    " + delimiter + "autotrade-message message\n        Set autotrade message.\n\n    " + delimiter + "autotrade-timeout timeout\n        Set autotrade timeout in seconds.\n\n    " + delimiter + "autotrade-activity\n        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.\n\n    " + delimiter + "autotrade-start\n        Start autotrade loop.\n\n    " + delimiter + "autotrade-stop\n        Stop autotrade loop.\n\n    " + delimiter + "autotrade-info\n        Show current state of autotrade.\n\n    " + delimiter + "calc actions\n        Stack oriented rune calculator without memory. 'actions' — space-separated sequence of commands. Available commands:\n\n            count {'pul', ..., 'jah'}\n                Put 'count' (1 if omitted) runes on stack. You can only use runes from 'pul' to 'jah'.\n\n            p\n                Print stack with \"highest\" rune 'jah'.\n\n            to {'pul', ..., 'jah'}\n                Print stack with specified \"highest\" rune.\n\n            c\n                Clear stack.\n\n            t\n                Show stack size in \"trains\" (7 mules average hellforge rune drop).\n\n            count'%'\n                Print 'count' percents of stack.\n\n        Example:\n\n            Input:\n                " + delimiter + "calc 15 pul um p -1 pul p to ist 25% t c t\n\n            Output:\n                1 gul, 1 pul\n                1 gul\n                2 ist\n                25% of stack = 1 mal\n                Trains count: 1\n                Trains count: 0\n                Stack: stack is empty.\n\n    " + delimiter + "clear-local-storage\n        Erase local options.\n\n\nShortcuts:\n\n    ctrl + right/left\n        Switch to next/previous tab.\n\n    ctrl + w\n        Close current tab.\n\n    ctrl + s\n        Switch autotrade on/off.\n\n    ctrl + r\n        Same as '" + delimiter + "reload'.\n\n    ctrl + d\n        Same as '" + delimiter + "disconnect'.\n\n    ctrl + i\n        Same as '" + delimiter + "autotrade-info'.\n\n    ctrl + m\n        Switch to main tab.\n\n    up/down\n        Browse commands history.\n\n    tab\n        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.";
+    return "d-chat-web help information.\nCommands:\n\n    " + delimiter + "echo message\n        Print message to screen without sending to battle.net.\n\n    " + delimiter + "connect account password\n        Disconnect if connected and connect to battle.net.\n\n    " + delimiter + "disconnect\n        Disconnect from battle.net.\n\n    " + delimiter + "reload\n        Reloads 'init' file. 'init' file loads on start and simply executes like user input.\n\n    " + delimiter + "autoscroll\n        Switch autoscroll on/off. Default 'on'.\n\n    " + delimiter + "help\n        Show help information.\n\n    " + delimiter + "tab-mode\n        Switch tab-mode on/off. Default 'on'.\n\n    " + delimiter + "autotrade-message message\n        Set autotrade message.\n\n    " + delimiter + "autotrade-timeout timeout\n        Set autotrade timeout in seconds.\n\n    " + delimiter + "autotrade-activity\n        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.\n\n    " + delimiter + "autotrade-start\n        Start autotrade loop.\n\n    " + delimiter + "autotrade-stop\n        Stop autotrade loop.\n\n    " + delimiter + "autotrade-info\n        Show current state of autotrade.\n\n    " + delimiter + "calc actions\n        Stack oriented rune calculator without memory. 'actions' — space-separated sequence of commands. Available commands:\n\n            count {'pul', ..., 'jah'}\n                Put 'count' (1 if omitted) runes on stack. You can only use runes from 'pul' to 'jah'.\n\n            p\n                Print stack with \"highest\" rune 'jah'.\n\n            to {'pul', ..., 'jah'}\n                Print stack with specified \"highest\" rune.\n\n            c\n                Clear stack.\n\n            t\n                Show stack size in \"trains\" (7 mules average hellforge rune drop).\n\n            count'%'\n                Print 'count' percents of stack.\n\n        Example:\n\n            Input:\n                " + delimiter + "calc 15 pul um p -1 pul p to ist 25% t c t\n\n            Output:\n                1 gul, 1 pul\n                1 gul\n                2 ist\n                25% of stack = 1 mal\n                Trains count: 1\n                Trains count: 0\n                Stack: stack is empty.\n\n    " + delimiter + "clear-local-storage\n        Erase local options.\n\n    " + delimiter + "clear-screen\n        Clear main tab.\n\n\nShortcuts:\n\n    ctrl + right/left\n        Switch to next/previous tab.\n\n    ctrl + w\n        Close current tab.\n\n    ctrl + s\n        Switch autotrade on/off.\n\n    ctrl + r\n        Same as '" + delimiter + "reload'.\n\n    ctrl + d\n        Same as '" + delimiter + "disconnect'.\n\n    ctrl + i\n        Same as '" + delimiter + "autotrade-info'.\n\n    ctrl + m\n        Switch to main tab.\n\n    up/down\n        Browse commands history.\n\n    tab\n        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.";
   };
 
   bnutil = (function() {
@@ -1880,11 +1885,15 @@
       this.users_count = 0;
       this.channel = null;
       this.connected = false;
+      if (localStorage.hashed_password != null) {
+        try {
+          this.hashed_password = JSON.parse(localStorage.hashed_password);
+        } catch (_error) {
+          localStorage.clear();
+        }
+      }
       this.autoscroll = localStorage.autoscroll || true;
       this.account = localStorage.account;
-      if (localStorage.hashed_password != null) {
-        this.hashed_password = JSON.parse(localStorage.hashed_password);
-      }
       this.tab_mode = localStorage.tab_mode || true;
       this.replacing_symbols = {
         ">": "&gt;",
@@ -1892,7 +1901,7 @@
         " ": "&nbsp;<wbr>",
         "\n": "<br>"
       };
-      this.commands_list = ["echo", "connect", "disconnect", "reload", "autoscroll", "help", "tab-mode", "autotrade-message", "autotrade-timeout", "autotrade-activity", "autotrade-start", "autotrade-stop", "autotrade-info", "calc", "clear-local-storage"];
+      this.commands_list = ["echo", "connect", "disconnect", "reload", "autoscroll", "help", "tab-mode", "autotrade-message", "autotrade-timeout", "autotrade-activity", "autotrade-start", "autotrade-stop", "autotrade-info", "calc", "clear-local-storage", "clear-screen"];
       this.autocomplete = new Autocomplete(this.commands_list.map(function(c) {
         return _this.commands_prefix + c;
       }));
@@ -2214,9 +2223,11 @@
             return x !== "";
           }), acc = _ref[0], pass = _ref[1];
           if ((acc != null) && (pass != null)) {
-            localStorage.account = this.account = acc;
             this.connect(acc, pass);
-            return localStorage.hashed_password = JSON.stringify(this.bn.hashpass);
+            if (this.bn.hashpass != null) {
+              localStorage.hashed_password = JSON.stringify(this.bn.hashpass);
+              return localStorage.account = this.account = acc;
+            }
           } else if ((localStorage.account != null) && (localStorage.hashed_password != null)) {
             this.account = localStorage.account;
             return this.connect(localStorage.account, JSON.parse(localStorage.hashed_password), true);
@@ -2267,6 +2278,9 @@
         case "clear-local-storage":
           localStorage.clear();
           return this.command("echo Local storage erased.");
+        case "clear-screen":
+          this.tabs.main.clear();
+          return this.tabs.set_active();
         default:
           return this.command("echo Unknown command '" + (cmd[0].toLowerCase()) + "'.");
       }
