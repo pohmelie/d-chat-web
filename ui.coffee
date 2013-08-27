@@ -237,7 +237,15 @@ class ui
             msg = @render_phrases(msgs...)
             @mem[username] = @internal_id
             id = "#{@user_list_id.substr(1)}-member-#{@mem[username]}"
-            $(@user_list_id).append("<div id='#{id}' class='user-list-member'>#{msg}</div>")
+            html = "<div id='#{id}' class='user-list-member'>#{msg}</div>"
+
+            if nickname != ""
+
+                $(@user_list_id).append(html)
+
+            else
+
+                $(@user_list_id).prepend(html)
 
             $("##{id}").on(
                 "mouseup",
