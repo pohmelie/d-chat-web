@@ -40,6 +40,11 @@ class History
 
             @mem.pop()
 
+        else if msg in @mem
+
+            @mem = @mem.filter((m) -> m != msg)
+            @add(msg)
+
 
     reset: () ->
 

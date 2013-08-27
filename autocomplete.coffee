@@ -8,6 +8,7 @@ class Autocomplete
     add: (word) ->
 
         if not (word in @words)
+
             @words.push(word)
             @words.sort()
 
