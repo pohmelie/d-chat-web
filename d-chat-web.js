@@ -1428,6 +1428,11 @@
     History.prototype.add = function(msg) {
       if ((!(__indexOf.call(this.mem, msg) >= 0)) && (this.mem.unshift(msg) > this.max_length)) {
         return this.mem.pop();
+      } else if (__indexOf.call(this.mem, msg) >= 0) {
+        this.mem = this.mem.filter(function(m) {
+          return m !== msg;
+        });
+        return this.add(msg);
       }
     };
 
