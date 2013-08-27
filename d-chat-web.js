@@ -443,7 +443,7 @@
       }
 
       UserList.prototype.add = function(username, nickname) {
-        var id, msg, msgs,
+        var html, id, msg, msgs,
           _this = this;
         if (this.mem[username] != null) {
           return;
@@ -455,7 +455,12 @@
         msg = this.render_phrases.apply(this, msgs);
         this.mem[username] = this.internal_id;
         id = "" + (this.user_list_id.substr(1)) + "-member-" + this.mem[username];
-        $(this.user_list_id).append("<div id='" + id + "' class='user-list-member'>" + msg + "</div>");
+        html = "<div id='" + id + "' class='user-list-member'>" + msg + "</div>";
+        if (nickname !== "") {
+          $(this.user_list_id).append(html);
+        } else {
+          $(this.user_list_id).prepend(html);
+        }
         $("#" + id).on("mouseup", function(e) {
           if (e.which === 1) {
             $(_this.input_id).val("/w *" + username + " ");
