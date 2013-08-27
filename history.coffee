@@ -36,11 +36,13 @@ class History
 
     add: (msg) ->
 
-        if (not (msg in @mem)) and (@mem.unshift(msg) > @max_length)
+        if not (msg in @mem)
 
-            @mem.pop()
+            if @mem.unshift(msg) > @max_length
 
-        else if msg in @mem
+                @mem.pop()
+
+        else
 
             @mem = @mem.filter((m) -> m != msg)
             @add(msg)
