@@ -2347,7 +2347,8 @@
   init = function() {
     var cache, dchat, _ref;
     cache = window.applicationCache;
-    if ((_ref = cache.status) === cache.CHECKING || _ref === cache.DOWNLOADING) {
+    console.log(cache.status);
+    if ((_ref = cache.status) === cache.CHECKING || _ref === cache.DOWNLOADING || _ref === cache.OBSOLETE) {
       console.log("updating...");
       setTimeout(init, 100);
     }
