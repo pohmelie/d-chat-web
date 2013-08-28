@@ -648,7 +648,7 @@ class Dchat
 init = () ->
 
     cache = window.applicationCache
-    console.log(cache.status)
+    console.log("appliction cache status = #{cache.status}")
 
     if cache.status in [cache.CHECKING, cache.DOWNLOADING, cache.OBSOLETE]
 
