@@ -654,6 +654,7 @@ init = () ->
 
         console.log("updating...")
         setTimeout(init, 100)
+        return
 
     if cache.status == cache.UPDATEREADY
 
