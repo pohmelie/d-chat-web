@@ -648,7 +648,9 @@ class Dchat
 init = () ->
 
     cache = window.applicationCache
-    if cache.status in [cache.CHECKING, cache.DOWNLOADING]
+    console.log(cache.status)
+
+    if cache.status in [cache.CHECKING, cache.DOWNLOADING, cache.OBSOLETE]
 
         console.log("updating...")
         setTimeout(init, 100)
