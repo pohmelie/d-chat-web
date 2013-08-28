@@ -87,7 +87,7 @@ class Dchat
 
             @command("connect")
 
-        if localStorage.autotrade is true
+        if localStorage.autotrade == "true"
 
             @command("autotrade-start")
 
