@@ -1929,7 +1929,7 @@
       if ((this.account != null) && (this.hashed_password != null)) {
         this.command("connect");
       }
-      if (localStorage.autotrade === true) {
+      if (localStorage.autotrade === "true") {
         this.command("autotrade-start");
       }
     }
