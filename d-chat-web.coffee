@@ -645,25 +645,23 @@ class Dchat
         @echo(["color-text", intro, true])
 
 
-$(() ->
+init = () ->
+
     cache = window.applicationCache
-    cache.addEventListener(
-        "updateready",
-        (e) =>
+    if cache.status in [cache.CHECKING, cache.DOWNLOADING]
 
-            if cache.status == cache.UPDATEREADY
+        console.log("updating...")
+        setTimeout(init, 100)
 
-                cache.swapCache()
+    if cache.status == cache.UPDATEREADY
 
-                if confirm('A new version of this site is available. Load it?')
-
-                    window.location.reload()
-
-    )
-
+        console.log("update ready")
+        cache.swapCache()
 
     dchat = new Dchat("#tabs", "#chat", "#user-list", "#input")
     window.java_socket_bridge_on_receive = dchat.bn.on_packet
     window.java_socket_bridge_error = dchat.socket_error
     $(window).unload(java_socket_bridge_disconnect)
-)
+
+
+$(init)
