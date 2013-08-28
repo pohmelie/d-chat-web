@@ -2351,6 +2351,7 @@
     if ((_ref = cache.status) === cache.CHECKING || _ref === cache.DOWNLOADING || _ref === cache.OBSOLETE) {
       console.log("updating...");
       setTimeout(init, 100);
+      return;
     }
     if (cache.status === cache.UPDATEREADY) {
       console.log("update ready");
