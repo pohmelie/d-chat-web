@@ -647,20 +647,6 @@ class Dchat
 
 init = () ->
 
-    cache = window.applicationCache
-    console.log("appliction cache status = #{cache.status}")
-
-    if cache.status in [cache.CHECKING, cache.DOWNLOADING, cache.OBSOLETE]
-
-        console.log("updating...")
-        setTimeout(init, 100)
-        return
-
-    if cache.status == cache.UPDATEREADY
-
-        console.log("update ready")
-        cache.swapCache()
-
     dchat = new Dchat("#tabs", "#chat", "#user-list", "#input")
     window.java_socket_bridge_on_receive = dchat.bn.on_packet
     window.java_socket_bridge_error = dchat.socket_error
