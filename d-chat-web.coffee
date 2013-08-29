@@ -443,23 +443,25 @@ class Dchat
 
             when 9  # tab
 
-                msg = $(@input_id).val()
-                words = @autocomplete.filter(msg)
-                if words.length == 1
+                if not e.ctrlKey
 
-                    $(@input_id).val(msg + @autocomplete.cut(msg, words[0]))
+                    msg = $(@input_id).val()
+                    words = @autocomplete.filter(msg)
+                    if words.length == 1
 
-                else if words.length > 1
+                        $(@input_id).val(msg + @autocomplete.cut(msg, words[0]))
 
-                    common = @autocomplete.cut(msg, @autocomplete.common(words))
-                    $(@input_id).val(msg + common)
+                    else if words.length > 1
 
-                    if common.length == 0
+                        common = @autocomplete.cut(msg, @autocomplete.common(words))
+                        $(@input_id).val(msg + common)
 
-                        words.unshift("#{words.length} possibilities:")
-                        @echo(["color-autocomplete", words.join("\n")])
+                        if common.length == 0
 
-                e.preventDefault()
+                            words.unshift("#{words.length} possibilities:")
+                            @echo(["color-autocomplete", words.join("\n")])
+
+                    e.preventDefault()
 
             when 38  # up
 
