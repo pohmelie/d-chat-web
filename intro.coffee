@@ -19,6 +19,5 @@ intro = """
     or press <span class='color-error'>f1</span>.
 <br><br>
 Version: 29.08.2013
-<br>
 </span>
 """
