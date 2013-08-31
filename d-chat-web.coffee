@@ -382,7 +382,7 @@ class Dchat
             e.preventDefault()
 
 
-        console.log(e.currentTarget, e.which, e.ctrlKey, e.altKey, e.shiftKey)
+        # console.log(e.currentTarget, e.which, e.ctrlKey, e.altKey, e.shiftKey)
 
 
     toggle_autotrade: () ->
