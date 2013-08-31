@@ -2349,6 +2349,9 @@
 
   init = function() {
     var dchat;
+    window.java_socket_bridge_info = function(msg) {
+      return msg;
+    };
     dchat = new Dchat("#tabs", "#chat", "#user-list", "#input");
     window.java_socket_bridge_on_receive = dchat.bn.on_packet;
     window.java_socket_bridge_error = dchat.socket_error;
