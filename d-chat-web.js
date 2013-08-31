@@ -1393,7 +1393,7 @@
     }
   };
 
-  intro = "<span class='color-text'>\n<pre class='color-system'>\n     _             _           _                      _\n    | |           | |         | |                    | |\n  __| |        ___| |__   __ _| |_      __      __ __| |__\n / _` |  __   / __| '_ \\ / _` | __|  __ \\ \\ /\\ / / _ \\ '_ \\\n| (_| | (__) | (__| | | | (_| | |_  (__) \\ V  V /  __/ |_) |\n \\__,_|       \\___|_| |_|\\__,_|\\__|       \\_/\\_/ \\___|_.__/\n</pre>\n<br>\n    Welcome to\n    <span class='color-whisper'>d-chat-web</span>\n    — fully client-side\n    <span class='color-error'>ru</span><span class='color-system'>battle.net</span>\n    chat client.\n    <br>\n    For more information type '<span class='color-error'>\\help</span>'\n    or press <span class='color-error'>f1</span>.\n<br><br>\nVersion: 29.08.2013\n</span>";
+  intro = "<span class='color-text'>\n<pre class='color-system'>\n     _             _           _                      _\n    | |           | |         | |                    | |\n  __| |        ___| |__   __ _| |_      __      __ __| |__\n / _` |  __   / __| '_ \\ / _` | __|  __ \\ \\ /\\ / / _ \\ '_ \\\n| (_| | (__) | (__| | | | (_| | |_  (__) \\ V  V /  __/ |_) |\n \\__,_|       \\___|_| |_|\\__,_|\\__|       \\_/\\_/ \\___|_.__/\n</pre>\n<br>\n    Welcome to\n    <span class='color-whisper'>d-chat-web</span>\n    — fully client-side\n    <span class='color-error'>ru</span><span class='color-system'>battle.net</span>\n    chat client.\n    <br>\n    For more information type '<span class='color-error'>\\help</span>'\n    or press <span class='color-error'>f1</span>.\n<br><br>\nVersion: 31.08.2013\n</span>";
 
   History = (function() {
     function History(max_length, none) {
