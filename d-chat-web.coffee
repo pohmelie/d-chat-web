@@ -649,6 +649,7 @@ class Dchat
 
 init = () ->
 
+    window.java_socket_bridge_info = (msg) -> msg
     dchat = new Dchat("#tabs", "#chat", "#user-list", "#input")
     window.java_socket_bridge_on_receive = dchat.bn.on_packet
     window.java_socket_bridge_error = dchat.socket_error
