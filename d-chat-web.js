@@ -2117,41 +2117,33 @@
         switch (e.which) {
           case 39:
             this.tabs.next();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 37:
             this.tabs.prev();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 87:
             this.tabs.remove();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 83:
             this.toggle_autotrade();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 82:
             this.load_init_file();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 68:
             this.disconnect();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 77:
             this.tabs.set_active();
-            e.preventDefault();
-            break;
+            return e.preventDefault();
           case 73:
             this.command("autotrade-info");
-            e.preventDefault();
+            return e.preventDefault();
         }
       } else if (e.which === 112) {
         this.show_help();
-        e.preventDefault();
+        return e.preventDefault();
       }
-      return console.log(e.currentTarget, e.which, e.ctrlKey, e.altKey, e.shiftKey);
     };
 
     Dchat.prototype.toggle_autotrade = function() {
