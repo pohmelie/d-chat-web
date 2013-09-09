@@ -1393,7 +1393,7 @@
     }
   };
 
-  intro = "<span class='color-text'>\n<pre class='color-system'>\n     _             _           _                      _\n    | |           | |         | |                    | |\n  __| |        ___| |__   __ _| |_      __      __ __| |__\n / _` |  __   / __| '_ \\ / _` | __|  __ \\ \\ /\\ / / _ \\ '_ \\\n| (_| | (__) | (__| | | | (_| | |_  (__) \\ V  V /  __/ |_) |\n \\__,_|       \\___|_| |_|\\__,_|\\__|       \\_/\\_/ \\___|_.__/\n</pre>\n<br>\n    Welcome to\n    <span class='color-whisper'>d-chat-web</span>\n    — fully client-side\n    <span class='color-error'>ru</span><span class='color-system'>battle.net</span>\n    chat client.\n    <br>\n    For more information type '<span class='color-error'>\\help</span>'\n    or press <span class='color-error'>f1</span>.\n<br><br>\nVersion: 31.08.2013\n</span>";
+  intro = "<span class='color-text'>\n<pre class='color-system'>\n     _             _           _                      _\n    | |           | |         | |                    | |\n  __| |        ___| |__   __ _| |_      __      __ __| |__\n / _` |  __   / __| '_ \\ / _` | __|  __ \\ \\ /\\ / / _ \\ '_ \\\n| (_| | (__) | (__| | | | (_| | |_  (__) \\ V  V /  __/ |_) |\n \\__,_|       \\___|_| |_|\\__,_|\\__|       \\_/\\_/ \\___|_.__/\n</pre>\n<br>\n    Welcome to\n    <span class='color-whisper'>d-chat-web</span>\n    — fully client-side\n    <span class='color-error'>ru</span><span class='color-system'>battle.net</span>\n    chat client.\n    <br>\n    For more information type '<span class='color-error'>\\help</span>'\n    or press <span class='color-error'>f1</span>.\n<br><br>\nVersion: 09.09.2013\n</span>";
 
   History = (function() {
     function History(max_length, none) {
@@ -1447,7 +1447,7 @@
   })();
 
   help_message = function(delimiter) {
-    return "d-chat-web help information.\nCommands:\n\n    " + delimiter + "echo message\n        Print message to screen without sending to battle.net.\n\n    " + delimiter + "connect account password\n        Disconnect if connected and connect to battle.net.\n\n    " + delimiter + "disconnect\n        Disconnect from battle.net.\n\n    " + delimiter + "reload\n        Reloads 'init' file. 'init' file loads on start and simply executes like user input.\n\n    " + delimiter + "autoscroll\n        Switch autoscroll on/off. Default 'on'.\n\n    " + delimiter + "help\n        Show help information.\n\n    " + delimiter + "tab-mode\n        Switch tab-mode on/off. Default 'on'.\n\n    " + delimiter + "autotrade-message message\n        Set autotrade message.\n\n    " + delimiter + "autotrade-timeout timeout\n        Set autotrade timeout in seconds.\n\n    " + delimiter + "autotrade-activity\n        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.\n\n    " + delimiter + "autotrade-start\n        Start autotrade loop.\n\n    " + delimiter + "autotrade-stop\n        Stop autotrade loop.\n\n    " + delimiter + "autotrade-info\n        Show current state of autotrade.\n\n    " + delimiter + "calc actions\n        Stack oriented rune calculator without memory. 'actions' — space-separated sequence of commands. Available commands:\n\n            count {'pul', ..., 'jah'}\n                Put 'count' (1 if omitted) runes on stack. You can only use runes from 'pul' to 'jah'.\n\n            p\n                Print stack with \"highest\" rune 'jah'.\n\n            to {'pul', ..., 'jah'}\n                Print stack with specified \"highest\" rune.\n\n            c\n                Clear stack.\n\n            t\n                Show stack size in \"trains\" (7 mules average hellforge rune drop).\n\n            count'%'\n                Print 'count' percents of stack.\n\n        Example:\n\n            Input:\n                " + delimiter + "calc 15 pul um p -1 pul p to ist 25% t c t\n\n            Output:\n                1 gul, 1 pul\n                1 gul\n                2 ist\n                25% of stack = 1 mal\n                Trains count: 1\n                Trains count: 0\n                Stack: stack is empty.\n\n    " + delimiter + "clear-local-storage\n        Erase local options.\n\n    " + delimiter + "clear-screen\n        Clear main tab.\n\n\nShortcuts:\n\n    ctrl + right/left\n        Switch to next/previous tab.\n\n    ctrl + w\n        Close current tab.\n\n    ctrl + s\n        Switch autotrade on/off.\n\n    ctrl + r\n        Same as '" + delimiter + "reload'.\n\n    ctrl + d\n        Same as '" + delimiter + "disconnect'.\n\n    ctrl + i\n        Same as '" + delimiter + "autotrade-info'.\n\n    ctrl + m\n        Switch to main tab.\n\n    up/down\n        Browse commands history.\n\n    tab\n        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.";
+    return "d-chat-web help information.\nCommands:\n\n    " + delimiter + "echo message\n        Print message to screen without sending to battle.net.\n\n    " + delimiter + "connect account password\n        Disconnect if connected and connect to battle.net.\n\n    " + delimiter + "disconnect\n        Disconnect from battle.net.\n\n    " + delimiter + "reload\n        Reloads 'init' file. 'init' file loads on start and simply executes like user input.\n\n    " + delimiter + "autoscroll\n        Switch autoscroll on/off. Default 'on'.\n\n    " + delimiter + "help\n        Show help information.\n\n    " + delimiter + "tab-mode\n        Switch tab-mode on/off. Default 'on'.\n\n    " + delimiter + "autotrade-message message\n        Set autotrade message.\n\n    " + delimiter + "autotrade-timeout timeout\n        Set autotrade timeout in seconds. Default 300.\n\n    " + delimiter + "autotrade-activity count\n        Set autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before 'count' messages. This is good for 'not to spam' and 'be quiet'. Default 10.\n\n    " + delimiter + "autotrade-start\n        Start autotrade loop.\n\n    " + delimiter + "autotrade-stop\n        Stop autotrade loop.\n\n    " + delimiter + "autotrade-info\n        Show current state of autotrade.\n\n    " + delimiter + "calc actions\n        Stack oriented rune calculator without memory. 'actions' — space-separated sequence of commands. Available commands:\n\n            count {'pul', ..., 'jah'}\n                Put 'count' (1 if omitted) runes on stack. You can only use runes from 'pul' to 'jah'.\n\n            p\n                Print stack with \"highest\" rune 'jah'.\n\n            to {'pul', ..., 'jah'}\n                Print stack with specified \"highest\" rune.\n\n            c\n                Clear stack.\n\n            t\n                Show stack size in \"trains\" (7 mules average hellforge rune drop).\n\n            count'%'\n                Print 'count' percents of stack.\n\n        Example:\n\n            Input:\n                " + delimiter + "calc 15 pul um p -1 pul p to ist 25% t c t\n\n            Output:\n                1 gul, 1 pul\n                1 gul\n                2 ist\n                25% of stack = 1 mal\n                Trains count: 1\n                Trains count: 0\n                Stack: stack is empty.\n\n    " + delimiter + "clear-local-storage\n        Erase local options.\n\n    " + delimiter + "clear-screen\n        Clear main tab.\n\n\nShortcuts:\n\n    ctrl + right/left\n        Switch to next/previous tab.\n\n    ctrl + w\n        Close current tab.\n\n    ctrl + s\n        Switch autotrade on/off.\n\n    ctrl + r\n        Same as '" + delimiter + "reload'.\n\n    ctrl + d\n        Same as '" + delimiter + "disconnect'.\n\n    ctrl + i\n        Same as '" + delimiter + "autotrade-info'.\n\n    ctrl + m\n        Switch to main tab.\n\n    up/down\n        Browse commands history.\n\n    tab\n        Request autocomplete. Autocompletes if there is one possibility, prints all possibilities else.";
   };
 
   bnutil = (function() {
@@ -1741,12 +1741,12 @@
     function Autotrade(say, msg, use_activity, timeout) {
       this.say = say;
       this.msg = msg != null ? msg : "N enigma free PLZ PLZ!!";
-      this.use_activity = use_activity != null ? use_activity : true;
+      this.use_activity = use_activity != null ? use_activity : 10;
       this.timeout = timeout != null ? timeout : 300;
       this.timer = __bind(this.timer, this);
       this.running = false;
       this.current_time = 0;
-      this.activity = false;
+      this.activity = 0;
     }
 
     Autotrade.prototype.timer = function() {
@@ -1756,9 +1756,9 @@
           return;
         }
         if (this.current_time === this.timeout - 1) {
-          if ((!this.use_activity) || (this.use_activity && this.activity)) {
+          if (this.activity >= this.use_activity) {
             this.current_time = 0;
-            this.activity = false;
+            this.activity = 0;
             this.say(this.msg);
           }
         } else {
@@ -1769,13 +1769,13 @@
     };
 
     Autotrade.prototype.trigger_activity = function() {
-      return this.activity = true;
+      return this.activity += 1;
     };
 
     Autotrade.prototype.start = function() {
       this.current_time = 0;
       this.running = true;
-      this.activity = false;
+      this.activity = 0;
       return setTimeout(this.timer, 1000);
     };
 
@@ -1917,7 +1917,13 @@
       this.autocomplete = new Autocomplete(this.commands_list.map(function(c) {
         return _this.commands_prefix + c;
       }));
-      this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_use_activity || true, localStorage.autotrade_timeout || 300);
+      if (isNaN(localStorage.autotrade_use_activity)) {
+        localStorage.autotrade_use_activity = 10;
+      }
+      if (isNaN(localStorage.autotrade_timeout)) {
+        localStorage.autotrade_timeout = 300;
+      }
+      this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_use_activity, localStorage.autotrade_timeout);
       this.history = new History();
       this.tabs = new ui.Tabs(this.tabs_id, this.chat_id, this.user_list_id, this.input_id, this.render_phrases, this.refresh_title);
       this.tabs.set_active(this.tabs.main);
@@ -2268,8 +2274,15 @@
           }
           return this.command("echo Current autotrade timeout is '" + this.autotrade.timeout + "'.");
         case "autotrade-activity":
-          localStorage.autotrade_use_activity = this.autotrade.use_activity = !this.autotrade.use_activity;
-          return this.command("echo Autotrade use-activity set to '" + this.autotrade.use_activity + "'.");
+          if (cmd.length > 1) {
+            t = parseInt(cmd[1]);
+            if (isNaN(t) || t < 0) {
+              this.command("echo Bad number '" + cmd[1] + "'.");
+            } else {
+              localStorage.autotrade_use_activity = this.autotrade.use_activity = t;
+            }
+          }
+          return this.command("echo Current autotrade use-activity is '" + this.autotrade.use_activity + "'.");
         case "autotrade-start":
           this.command("echo Autotrade started with message = '" + this.autotrade.msg + "' and timeout = '" + this.autotrade.timeout + "'.");
           this.autotrade.start();
