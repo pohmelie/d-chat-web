@@ -2,16 +2,19 @@ CACHE MANIFEST
 
 # 2013.09.09
 
-/index.html
-/d-chat-web.css
-/favicon.ico
-/JavaSocketBridge.jar
-/check-revision-background.js
-/jquery-2.0.2.min.js
-/icon.png
+index.html
+d-chat-web.css
+favicon.ico
+JavaSocketBridge.jar
+check-revision-background.js
+jquery-2.0.2.min.js
+icon.png
 
-/d2xp/Bnclient.dll
-/d2xp/D2Client.dll
-/d2xp/Game.dll
+d2xp/Bnclient.dll
+d2xp/D2Client.dll
+d2xp/Game.dll
 
-/fonts/uYKcPVoh6c5R0NpdEY5A-Q.woff
+fonts/uYKcPVoh6c5R0NpdEY5A-Q.woff
+
+NETWORK:
+*
