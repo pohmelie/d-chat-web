@@ -59,11 +59,20 @@ class Dchat
             "clear-screen",
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
+
+        if isNaN(localStorage.autotrade_use_activity)
+
+            localStorage.autotrade_use_activity = 10
+
+        if isNaN(localStorage.autotrade_timeout)
+
+            localStorage.autotrade_timeout = 300
+
         @autotrade = new Autotrade(
             @common_message,
             localStorage.autotrade_msg or "N enigma free PLZ PLZ!!",
-            localStorage.autotrade_use_activity or true,
-            localStorage.autotrade_timeout or 300
+            localStorage.autotrade_use_activity,
+            localStorage.autotrade_timeout
         )
 
         @history = new History()
@@ -561,8 +570,18 @@ class Dchat
 
             when "autotrade-activity"
 
-                localStorage.autotrade_use_activity = @autotrade.use_activity = not @autotrade.use_activity
-                @command("echo Autotrade use-activity set to '#{@autotrade.use_activity}'.")
+                if cmd.length > 1
+
+                    t = parseInt(cmd[1])
+                    if isNaN(t) or t < 0
+
+                        @command("echo Bad number '#{cmd[1]}'.")
+
+                    else
+
+                        localStorage.autotrade_use_activity = @autotrade.use_activity = t
+
+                @command("echo Current autotrade use-activity is '#{@autotrade.use_activity}'.")
 
             when "autotrade-start"
 

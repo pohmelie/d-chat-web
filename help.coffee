@@ -27,10 +27,10 @@ Commands:
         Set autotrade message.
 
     #{delimiter}autotrade-timeout timeout
-        Set autotrade timeout in seconds.
+        Set autotrade timeout in seconds. Default 300.
 
-    #{delimiter}autotrade-activity
-        Switch autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before anyone will say something. This is good for 'not to spam' and 'be quiet'.
+    #{delimiter}autotrade-activity count
+        Set autotrade use-activity value. When use-activity mode is on, autotrade message won't appear before 'count' messages. This is good for 'not to spam' and 'be quiet'. Default 10.
 
     #{delimiter}autotrade-start
         Start autotrade loop.
