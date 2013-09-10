@@ -1738,15 +1738,15 @@
   })();
 
   Autotrade = (function() {
-    function Autotrade(say, msg, use_activity, timeout) {
+    function Autotrade(say, msg, activity, timeout) {
       this.say = say;
       this.msg = msg != null ? msg : "N enigma free PLZ PLZ!!";
-      this.use_activity = use_activity != null ? use_activity : 10;
+      this.activity = activity != null ? activity : 10;
       this.timeout = timeout != null ? timeout : 300;
       this.timer = __bind(this.timer, this);
       this.running = false;
       this.current_time = 0;
-      this.activity = 0;
+      this.current_activity = 0;
     }
 
     Autotrade.prototype.timer = function() {
@@ -1756,9 +1756,9 @@
           return;
         }
         if (this.current_time === this.timeout - 1) {
-          if (this.activity >= this.use_activity) {
+          if (this.current_activity >= this.activity) {
             this.current_time = 0;
-            this.activity = 0;
+            this.current_activity = 0;
             this.say(this.msg);
           }
         } else {
@@ -1769,13 +1769,13 @@
     };
 
     Autotrade.prototype.trigger_activity = function() {
-      return this.activity = Math.min(this.activity + 1, this.use_activity);
+      return this.current_activity = Math.min(this.current_activity + 1, this.activity);
     };
 
     Autotrade.prototype.start = function() {
       this.current_time = 0;
       this.running = true;
-      this.activity = 0;
+      this.current_activity = 0;
       return setTimeout(this.timer, 1000);
     };
 
@@ -1921,13 +1921,13 @@
       this.autocomplete = new Autocomplete(this.commands_list.map(function(c) {
         return _this.commands_prefix + c;
       }));
-      if (isNaN(localStorage.autotrade_use_activity) || (localStorage.autotrade_use_activity < this.min_autotrade_activity)) {
-        localStorage.autotrade_use_activity = this.default_autotrade_activity;
+      if (isNaN(localStorage.autotrade_activity) || (localStorage.autotrade_activity < this.min_autotrade_activity)) {
+        localStorage.autotrade_activity = this.default_autotrade_activity;
       }
       if (isNaN(localStorage.autotrade_timeout) || (localStorage.autotrade_timeout < this.min_autotrade_timeout)) {
         localStorage.autotrade_timeout = this.default_autotrade_timeout;
       }
-      this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_use_activity, localStorage.autotrade_timeout);
+      this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_activity, localStorage.autotrade_timeout);
       this.history = new History();
       this.tabs = new ui.Tabs(this.tabs_id, this.chat_id, this.user_list_id, this.input_id, this.render_phrases, this.refresh_title);
       this.tabs.set_active(this.tabs.main);
@@ -2283,10 +2283,10 @@
             if (isNaN(t) || t < this.min_autotrade_activity) {
               this.command("echo Bad number '" + cmd[1] + "' (must be greater or equal to " + this.min_autotrade_activity + ").");
             } else {
-              localStorage.autotrade_use_activity = this.autotrade.use_activity = t;
+              localStorage.autotrade_activity = this.autotrade.activity = t;
             }
           }
-          return this.command("echo Current autotrade use-activity is '" + this.autotrade.use_activity + "'.");
+          return this.command("echo Current autotrade activity is '" + this.autotrade.activity + "'.");
         case "autotrade-start":
           this.command("echo Autotrade started with message = '" + this.autotrade.msg + "' and timeout = '" + this.autotrade.timeout + "'.");
           this.autotrade.start();
@@ -2296,7 +2296,7 @@
           this.autotrade.stop();
           return localStorage.autotrade = false;
         case "autotrade-info":
-          return this.command("echo Autotrade info:\nrunning = " + this.autotrade.running + "\nmessage = " + this.autotrade.msg + "\ntime = " + this.autotrade.current_time + "/" + this.autotrade.timeout + "\nuse activity = " + this.autotrade.use_activity + "\nactivity = " + this.autotrade.activity);
+          return this.command("echo Autotrade info:\nrunning = " + this.autotrade.running + "\nmessage = " + this.autotrade.msg + "\ntime = " + this.autotrade.current_time + "/" + this.autotrade.timeout + "\nactivity = " + this.autotrade.activity + "\ncurrent activity = " + this.autotrade.current_activity);
         case "calc":
           return this.command("echo " + (Calculator.calc(cmd.slice(1))));
         case "clear-local-storage":
