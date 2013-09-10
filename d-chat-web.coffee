@@ -64,9 +64,9 @@ class Dchat
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
 
-        if isNaN(localStorage.autotrade_use_activity) or (localStorage.autotrade_use_activity < @min_autotrade_activity)
+        if isNaN(localStorage.autotrade_activity) or (localStorage.autotrade_activity < @min_autotrade_activity)
 
-            localStorage.autotrade_use_activity = @default_autotrade_activity
+            localStorage.autotrade_activity = @default_autotrade_activity
 
         if isNaN(localStorage.autotrade_timeout) or (localStorage.autotrade_timeout < @min_autotrade_timeout)
 
@@ -75,7 +75,7 @@ class Dchat
         @autotrade = new Autotrade(
             @common_message,
             localStorage.autotrade_msg or "N enigma free PLZ PLZ!!",
-            localStorage.autotrade_use_activity,
+            localStorage.autotrade_activity,
             localStorage.autotrade_timeout
         )
 
@@ -584,9 +584,9 @@ class Dchat
 
                     else
 
-                        localStorage.autotrade_use_activity = @autotrade.use_activity = t
+                        localStorage.autotrade_activity = @autotrade.activity = t
 
-                @command("echo Current autotrade use-activity is '#{@autotrade.use_activity}'.")
+                @command("echo Current autotrade activity is '#{@autotrade.activity}'.")
 
             when "autotrade-start"
 
@@ -607,8 +607,8 @@ class Dchat
                 running = #{@autotrade.running}
                 message = #{@autotrade.msg}
                 time = #{@autotrade.current_time}/#{@autotrade.timeout}
-                use activity = #{@autotrade.use_activity}
                 activity = #{@autotrade.activity}
+                current activity = #{@autotrade.current_activity}
                 """)
 
             when "calc"

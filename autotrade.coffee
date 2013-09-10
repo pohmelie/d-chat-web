@@ -1,10 +1,10 @@
 class Autotrade
 
-    constructor: (@say, @msg="N enigma free PLZ PLZ!!", @use_activity=10, @timeout=300) ->
+    constructor: (@say, @msg="N enigma free PLZ PLZ!!", @activity=10, @timeout=300) ->
 
         @running = false
         @current_time = 0
-        @activity = 0
+        @current_activity = 0
 
 
     timer: () =>
@@ -18,10 +18,10 @@ class Autotrade
 
             if @current_time == @timeout - 1
 
-                if @activity >= @use_activity
+                if @current_activity >= @activity
 
                     @current_time = 0
-                    @activity = 0
+                    @current_activity = 0
                     @say(@msg)
 
             else
@@ -33,14 +33,14 @@ class Autotrade
 
     trigger_activity: () ->
 
-        @activity = Math.min(@activity + 1, @use_activity)
+        @current_activity = Math.min(@current_activity + 1, @activity)
 
 
     start: () ->
 
         @current_time = 0
         @running = true
-        @activity = 0
+        @current_activity = 0
         setTimeout(@timer, 1000)
 
 
