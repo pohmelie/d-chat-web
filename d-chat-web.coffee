@@ -15,6 +15,8 @@ class Dchat
         @max_symbols = 199
         @min_autotrade_timeout = 120
         @min_autotrade_activity = 0
+        @default_autotrade_timeout = 300
+        @default_autotrade_activity = 10
 
         @nicknames = {}
         @users_count = 0
@@ -64,11 +66,11 @@ class Dchat
 
         if isNaN(localStorage.autotrade_use_activity) or (localStorage.autotrade_use_activity < @min_autotrade_activity)
 
-            localStorage.autotrade_use_activity = @min_autotrade_activity
+            localStorage.autotrade_use_activity = @default_autotrade_activity
 
         if isNaN(localStorage.autotrade_timeout) or (localStorage.autotrade_timeout < @min_autotrade_timeout)
 
-            localStorage.autotrade_timeout = 300
+            localStorage.autotrade_timeout = @default_autotrade_timeout
 
         @autotrade = new Autotrade(
             @common_message,
