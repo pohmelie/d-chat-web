@@ -33,7 +33,7 @@ class Autotrade
 
     trigger_activity: () ->
 
-        @activity += 1
+        @activity = Math.min(@activity + 1, @use_activity)
 
 
     start: () ->
