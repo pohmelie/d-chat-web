@@ -1893,6 +1893,8 @@
       this.login_error = __bind(this.login_error, this);
       this.render_phrases = __bind(this.render_phrases, this);
       this.max_symbols = 199;
+      this.min_autotrade_timeout = 120;
+      this.min_autotrade_activity = 0;
       this.nicknames = {};
       this.users_count = 0;
       this.channel = null;
@@ -1917,10 +1919,10 @@
       this.autocomplete = new Autocomplete(this.commands_list.map(function(c) {
         return _this.commands_prefix + c;
       }));
-      if (isNaN(localStorage.autotrade_use_activity)) {
-        localStorage.autotrade_use_activity = 10;
+      if (isNaN(localStorage.autotrade_use_activity) || (localStorage.autotrade_use_activity < this.min_autotrade_activity)) {
+        localStorage.autotrade_use_activity = this.min_autotrade_activity;
       }
-      if (isNaN(localStorage.autotrade_timeout)) {
+      if (isNaN(localStorage.autotrade_timeout) || (localStorage.autotrade_timeout < this.min_autotrade_timeout)) {
         localStorage.autotrade_timeout = 300;
       }
       this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_use_activity, localStorage.autotrade_timeout);
@@ -2266,8 +2268,8 @@
         case "autotrade-timeout":
           if (cmd.length > 1) {
             t = parseInt(cmd[1]);
-            if (isNaN(t) || t <= 0) {
-              this.command("echo Bad number '" + cmd[1] + "'.");
+            if (isNaN(t) || t < this.min_autotrade_timeout) {
+              this.command("echo Bad number '" + cmd[1] + "' (must be greater or equal to " + this.min_autotrade_timeout + ").");
             } else {
               localStorage.autotrade_timeout = this.autotrade.timeout = t;
             }
@@ -2276,8 +2278,8 @@
         case "autotrade-activity":
           if (cmd.length > 1) {
             t = parseInt(cmd[1]);
-            if (isNaN(t) || t < 0) {
-              this.command("echo Bad number '" + cmd[1] + "'.");
+            if (isNaN(t) || t < this.min_autotrade_activity) {
+              this.command("echo Bad number '" + cmd[1] + "' (must be greater or equal to " + this.min_autotrade_activity + ").");
             } else {
               localStorage.autotrade_use_activity = this.autotrade.use_activity = t;
             }
