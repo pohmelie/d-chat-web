@@ -13,6 +13,8 @@ class Dchat
     constructor: (@tabs_id, @chat_id, @user_list_id, @input_id, @commands_prefix="\\") ->
 
         @max_symbols = 199
+        @min_autotrade_timeout = 120
+        @min_autotrade_activity = 0
 
         @nicknames = {}
         @users_count = 0
@@ -60,11 +62,11 @@ class Dchat
         ]
         @autocomplete = new Autocomplete(@commands_list.map((c) => @commands_prefix + c))
 
-        if isNaN(localStorage.autotrade_use_activity)
+        if isNaN(localStorage.autotrade_use_activity) or (localStorage.autotrade_use_activity < @min_autotrade_activity)
 
-            localStorage.autotrade_use_activity = 10
+            localStorage.autotrade_use_activity = @min_autotrade_activity
 
-        if isNaN(localStorage.autotrade_timeout)
+        if isNaN(localStorage.autotrade_timeout) or (localStorage.autotrade_timeout < @min_autotrade_timeout)
 
             localStorage.autotrade_timeout = 300
 
@@ -558,9 +560,9 @@ class Dchat
 
                     t = parseInt(cmd[1])
 
-                    if isNaN(t) or t <= 0
+                    if isNaN(t) or t < @min_autotrade_timeout
 
-                        @command("echo Bad number '#{cmd[1]}'.")
+                        @command("echo Bad number '#{cmd[1]}' (must be greater or equal to #{@min_autotrade_timeout}).")
 
                     else
 
@@ -573,9 +575,10 @@ class Dchat
                 if cmd.length > 1
 
                     t = parseInt(cmd[1])
-                    if isNaN(t) or t < 0
 
-                        @command("echo Bad number '#{cmd[1]}'.")
+                    if isNaN(t) or t < @min_autotrade_activity
+
+                        @command("echo Bad number '#{cmd[1]}' (must be greater or equal to #{@min_autotrade_activity}).")
 
                     else
 
