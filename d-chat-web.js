@@ -1895,6 +1895,8 @@
       this.max_symbols = 199;
       this.min_autotrade_timeout = 120;
       this.min_autotrade_activity = 0;
+      this.default_autotrade_timeout = 300;
+      this.default_autotrade_activity = 10;
       this.nicknames = {};
       this.users_count = 0;
       this.channel = null;
@@ -1920,10 +1922,10 @@
         return _this.commands_prefix + c;
       }));
       if (isNaN(localStorage.autotrade_use_activity) || (localStorage.autotrade_use_activity < this.min_autotrade_activity)) {
-        localStorage.autotrade_use_activity = this.min_autotrade_activity;
+        localStorage.autotrade_use_activity = this.default_autotrade_activity;
       }
       if (isNaN(localStorage.autotrade_timeout) || (localStorage.autotrade_timeout < this.min_autotrade_timeout)) {
-        localStorage.autotrade_timeout = 300;
+        localStorage.autotrade_timeout = this.default_autotrade_timeout;
       }
       this.autotrade = new Autotrade(this.common_message, localStorage.autotrade_msg || "N enigma free PLZ PLZ!!", localStorage.autotrade_use_activity, localStorage.autotrade_timeout);
       this.history = new History();
