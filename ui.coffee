@@ -164,6 +164,7 @@ class ui
 
                     @set_active(@main)
 
+                $(tab.id).off("mouseup")
                 $(tab.id).remove()
 
                 @autosize()
@@ -266,6 +267,7 @@ class ui
 
             if @mem[username]?
 
+                $("#{@user_list_id}-member-#{@mem[username]}").off("mouseup")
                 $("#{@user_list_id}-member-#{@mem[username]}").remove()
                 delete @mem[username]
 
