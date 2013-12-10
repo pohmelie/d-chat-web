@@ -24,6 +24,7 @@ Commands:
         Switch tab-mode on/off. Default 'on'.
 
     #{delimiter}autotrade-message message
+    #{delimiter}atm message
         Set autotrade message.
 
     #{delimiter}autotrade-timeout timeout

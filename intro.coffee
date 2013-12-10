@@ -18,6 +18,6 @@ intro = """
     For more information type '<span class='color-error'>\\help</span>'
     or press <span class='color-error'>f1</span>.
 <br><br>
-Version: 30.09.2013
+Version: 10.12.2013
 </span>
 """
