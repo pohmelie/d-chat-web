@@ -52,7 +52,7 @@ class Dchat
             "autoscroll",
             "help",
             "tab-mode",
-            "autotrade-message",
+            "autotrade-message", "atm",
             "autotrade-timeout",
             "autotrade-activity",
             "autotrade-start",
@@ -548,7 +548,7 @@ class Dchat
 
                 @toggle_tab_mode()
 
-            when "autotrade-message"
+            when "autotrade-message", "atm"
 
                 if cmd.length > 1
 
